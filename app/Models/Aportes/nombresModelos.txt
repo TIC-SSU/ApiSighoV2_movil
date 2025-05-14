@@ -1,0 +1,11 @@
+AporteInstitucional
+AporteVoluntario
+ClaseAportante
+Comprobante
+ContratoVoluntario
+FormaPago
+Institucion
+Mes
+PlanillaBajaMedica
+TasaInteres
+ufv
