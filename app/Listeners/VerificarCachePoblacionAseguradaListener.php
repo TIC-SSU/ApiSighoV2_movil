@@ -26,9 +26,6 @@ class VerificarCachePoblacionAseguradaListener
      */
     public function handle(VerificarCachePoblacionAsegurada $event): void
     {
-
-
-        // Log::info('¡Prueba de reinicio de logs!');
         $key = $event->cacheKey1;
 
         Log::info('Confirmación, Cache Creado de : ' . $key . ' a las: ' . Carbon::now());
@@ -43,39 +40,50 @@ class VerificarCachePoblacionAseguradaListener
                     'PersonaBeneficiario.titularBeneficiario',
                     'autorizacionInteriorPersonaInterior',
                     'convenioPersona',
-                    'PersonaEstudiante',
+                    'PersonaEstudiante'
                 ])
                 ->orderBy('id', 'asc')
                 ->get();
 
             foreach ($consultaPersona as $persona) {
                 $idPersonaTitular = 0;
+
                 $tipoAsegurado = $persona->tipoAseguradoPersona->tipo_asegurado ?? null;
 
                 switch ($tipoAsegurado) {
                     case 'TITULAR':
                         $titular = $persona->PersonaTitular->where('estado', true)->first();
                         $idPersonaTitular = $titular->id_persona ?? 0;
+                        $liga = 'Afiliacion/FOTOS/';
+                        $foto = $titular->foto_nombre ?? null;
                         break;
 
                     case 'BENEFICIARIO DEL INTERIOR':
                         $autorizacionInterior = $persona->autorizacionInteriorPersonaInterior->where('estado', true)->first();
                         $idPersonaTitular = $autorizacionInterior->id_persona_titular ?? 0;
+                        $liga = 'Vigencia/FOTOS/CONVENIO/';
+                        $foto = $autorizacionInterior->foto_nombre ?? null;
                         break;
 
                     case (Str::contains($tipoAsegurado, 'BENEFICIARIO')):
                         $beneficiario = $persona->PersonaBeneficiario->where('estado', true)->first();
                         $idPersonaTitular = $beneficiario->titularBeneficiario->id_persona ?? 0;
+                        $liga = 'Afiliacion/FOTOS/';
+                        $foto = $beneficiario->foto_nombre ?? null;
                         break;
 
                     case 'TITULAR DEL INTERIOR':
                         $autorizacionInteriorTitular = $persona->autorizacionInteriorPersonaInterior->where('estado', true)->first();
                         $idPersonaTitular = $autorizacionInteriorTitular->id_persona_titular ?? 0;
+                        $liga = 'Vigencia/FOTOS/CONVENIO/';
+                        $foto = $autorizacionInteriorTitular->foto_nombre ?? null;
                         break;
 
                     case 'TITULAR CONVENIO':
                         $convenio = $persona->convenioPersona->where('estado', true)->first();
                         $idPersonaTitular = $convenio->id_persona ?? 0;
+                        $liga = 'Vigencia/FOTOS/CONVENIO/';
+                        $foto = $convenio->foto_nombre ?? null;
                         break;
 
                     case 'ESTUDIANTE':
@@ -85,6 +93,8 @@ class VerificarCachePoblacionAseguradaListener
                             ->where('estado_validar', 'AFILIADO')
                             ->first();
                         $idPersonaTitular = $estudiante->id_persona ?? 0;
+                        $liga = 'Afiliacion/SSUE/FOTOS/';
+                        $foto = $estudiante->foto_nombre ?? null;
                         break;
 
                     default:
@@ -106,6 +116,8 @@ class VerificarCachePoblacionAseguradaListener
                     'tipo_asegurado' => $tipoAsegurado,
                     'excepcion' => $persona->excepcion,
                     'id_persona_titular' => $idPersonaTitular,
+                    'foto' => $foto,
+                    'liga' => $liga,
                 ];
             }
 

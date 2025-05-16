@@ -23,26 +23,25 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     // Route::post('register', [AuthController::class, 'register']);
 });
-// Rutas protegidas con JWT
-Route::middleware(['auth.jwt'])->group(function () {
-    Route::prefix('app')->group(function () {
-        Route::prefix('testing')->group(function () {
-            require base_path('routes/test/test_routes.php');
-        });
+// Rutas protegidas con JWT /* 'redis', */
+Route::middleware([/* 'auth.jwt' */])->group(function () {
 
-        // Route::get('test_token', [TestTokenController::class, 'testToken']);
+    Route::prefix('testing')->group(function () {
+        require base_path('routes/test/test_routes.php');
+    });
 
-        // Route::prefix('administracion')->group(function () {
-        //     require base_path('routes/persona_routes.php');
-        //     require base_path('routes/administracion/especialidad_routes.php');
-        // });
+    // Route::get('test_token', [TestTokenController::class, 'testToken']);
 
-        // Route::prefix('afiliacion')->group(function () {});
+    Route::prefix('administracion')->group(function () {
+        require base_path('routes/administracion/persona_routes.php');
+        // require base_path('routes/administracion/especialidad_routes.php');
+    });
 
-        // Route::prefix('aportes')->group(function () {});
+    // Route::prefix('afiliacion')->group(function () {});
 
-        // Route::prefix('plataforma')->group(function () {
-        //     require base_path('routes/plataforma/especialista_routes.php');
-        // });
+    // Route::prefix('aportes')->group(function () {});
+
+    Route::prefix('plataforma')->group(function () {
+        require base_path('routes/plataforma/agenda_routes.php');
     });
 });

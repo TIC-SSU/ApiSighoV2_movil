@@ -4,12 +4,26 @@ namespace App\Http\Controllers\Plataforma;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plataforma\DiasHabilitadosAgenda;
+use App\Services\Plataforma\AgendaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class DiasHabilitadoAgendaController extends Controller
 {
     //
+    protected $agendaService;
+
+    public function __construct(AgendaService $agendaService)
+    {
+        $this->agendaService = $agendaService;
+    }
+    public function obtenerFechas(): JsonResponse
+    {
+        $fechas = $this->agendaService->obtenerFechasDisponibles();
+        return response()->json($fechas);
+    }
+
     public function fechas_habilitadas(Request $request)
     {
         try {

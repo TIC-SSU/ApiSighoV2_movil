@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Middleware\RedisMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\JwtMiddleware;
+use Illuminate\Support\Facades\Redis;
+
+// use App\Http\Middleware\RedisMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,7 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'auth.jwt' => App\Http\Middleware\JwtMiddleware::class,
+            'redis' => App\Http\Middleware\RedisMiddleware::class,
         ]);
+        // $middleware->append(RedisMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
