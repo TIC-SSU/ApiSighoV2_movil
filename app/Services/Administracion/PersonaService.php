@@ -62,76 +62,76 @@ class PersonaService
     //         throw $e;
     //     }
     // }
-    public function listarEspecialidades(Request $request)
-    {
-        try {
-            $fecha_agenda = Carbon::parse($request->fecha_agenda)->format('Y-m-d');
-            $id_persona = $request->id_persona;
+    // public function listarEspecialidades(Request $request)
+    // {
+    //     try {
+    //         $fecha_agenda = Carbon::parse($request->fecha_agenda)->format('Y-m-d');
+    //         $id_persona = $request->id_persona;
 
-            $verifica_agenda = AgendaController::fecha_agenda_ocupada_familiar($fecha_agenda, $id_persona);
-            if ($verifica_agenda) {
-                $data = [
-                    'status' => 409,
-                    'message' => 'Esta fecha ya a sido ocupada por Usted o algun miembro del grupo familiar',
-                ];
-                return response()->json($data, 409);
-            }
-            // dd($fecha_agenda);
-            // $especialidades_habilitadas = EspecialidadHabilitadoServicio::where('estado', '=', true)
-            //     ->where('fecha_inicio', '<=', $fecha_agenda)
-            //     ->orWhereNull('fecha_inicio')
-            //     ->where('fecha_fin', '>=', $fecha_agenda)
-            //     ->orWhereNull('fecha_fin')
-            //     ->where('id_servicio', '=', 4)
-            //     ->with([
-            //         'especialidadEspecialidadHabilitadoServicio',
-            //     ])
-            //     ->get();
-            $especialidades_habilitadas = EspecialidadHabilitadoServicio::where('estado', '=', true)
-                ->where(function ($query) use ($fecha_agenda) {
-                    // Grupo de condiciones para fecha_inicio
-                    $query->where('fecha_inicio', '<=', $fecha_agenda)
-                        ->orWhereNull('fecha_inicio');
-                })
-                ->where(function ($query) use ($fecha_agenda) {
-                    // Grupo de condiciones para fecha_fin
-                    $query->where('fecha_fin', '>=', $fecha_agenda)
-                        ->orWhereNull('fecha_fin');
-                })
-                ->where('id_servicio', '=', 2)
-                ->with(['especialidadEspecialidadHabilitadoServicio'])
-                ->get();
+    //         $verifica_agenda = AgendaController::fecha_agenda_ocupada_familiar($fecha_agenda, $id_persona);
+    //         if ($verifica_agenda) {
+    //             $data = [
+    //                 'status' => 409,
+    //                 'message' => 'Esta fecha ya a sido ocupada por Usted o algun miembro del grupo familiar',
+    //             ];
+    //             return response()->json($data, 409);
+    //         }
+    //         // dd($fecha_agenda);
+    //         // $especialidades_habilitadas = EspecialidadHabilitadoServicio::where('estado', '=', true)
+    //         //     ->where('fecha_inicio', '<=', $fecha_agenda)
+    //         //     ->orWhereNull('fecha_inicio')
+    //         //     ->where('fecha_fin', '>=', $fecha_agenda)
+    //         //     ->orWhereNull('fecha_fin')
+    //         //     ->where('id_servicio', '=', 4)
+    //         //     ->with([
+    //         //         'especialidadEspecialidadHabilitadoServicio',
+    //         //     ])
+    //         //     ->get();
+    //         $especialidades_habilitadas = EspecialidadHabilitadoServicio::where('estado', '=', true)
+    //             ->where(function ($query) use ($fecha_agenda) {
+    //                 // Grupo de condiciones para fecha_inicio
+    //                 $query->where('fecha_inicio', '<=', $fecha_agenda)
+    //                     ->orWhereNull('fecha_inicio');
+    //             })
+    //             ->where(function ($query) use ($fecha_agenda) {
+    //                 // Grupo de condiciones para fecha_fin
+    //                 $query->where('fecha_fin', '>=', $fecha_agenda)
+    //                     ->orWhereNull('fecha_fin');
+    //             })
+    //             ->where('id_servicio', '=', 2)
+    //             ->with(['especialidadEspecialidadHabilitadoServicio'])
+    //             ->get();
 
-            if ($especialidades_habilitadas->isEmpty()) {
-                $data = [
-                    'status' => 404,
-                    'message' => 'No se econtraron datos de Especialidades habilitadas en la fecha',
-                ];
-                return response()->json($data, 404);
-            }
-            // $especialidades = Especialidad::where('estado', 'true')->get();
-            // if ($especialidades->isEmpty()) {
-            //     $data = [
-            //         'status' => 404,
-            //         'message' => 'No se econtraron datos de Especialidades',
-            //     ];
-            //     return response()->json($this->utf8ize($data), 404);
-            // }
-            $data = [
-                'status' => 200,
-                'especialidades' => $especialidades_habilitadas,
+    //         if ($especialidades_habilitadas->isEmpty()) {
+    //             $data = [
+    //                 'status' => 404,
+    //                 'message' => 'No se econtraron datos de Especialidades habilitadas en la fecha',
+    //             ];
+    //             return response()->json($data, 404);
+    //         }
+    //         // $especialidades = Especialidad::where('estado', 'true')->get();
+    //         // if ($especialidades->isEmpty()) {
+    //         //     $data = [
+    //         //         'status' => 404,
+    //         //         'message' => 'No se econtraron datos de Especialidades',
+    //         //     ];
+    //         //     return response()->json($this->utf8ize($data), 404);
+    //         // }
+    //         $data = [
+    //             'status' => 200,
+    //             'especialidades' => $especialidades_habilitadas,
 
-            ];
-            return response()->json($data, 200);
-        } catch (\Throwable $th) {
-            $dataError = [
-                'success' => false,
-                'message' => 'Error al listar Especialidades',
-                'error' => $th->getMessage(), // Mensaje del error
-                'line' => $th->getLine(), // L nea donde ocurri el error
-                'file' => $th->getFile(), // Archivo donde ocurri el error
-            ];
-            return response()->json($dataError, 500);
-        }
-    }
+    //         ];
+    //         return response()->json($data, 200);
+    //     } catch (\Throwable $th) {
+    //         $dataError = [
+    //             'success' => false,
+    //             'message' => 'Error al listar Especialidades',
+    //             'error' => $th->getMessage(), // Mensaje del error
+    //             'line' => $th->getLine(), // L nea donde ocurri el error
+    //             'file' => $th->getFile(), // Archivo donde ocurri el error
+    //         ];
+    //         return response()->json($dataError, 500);
+    //     }
+    // }
 }

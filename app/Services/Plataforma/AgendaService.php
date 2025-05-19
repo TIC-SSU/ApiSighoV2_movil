@@ -40,7 +40,7 @@ class AgendaService
     //PASOS
     public $paso = 1;
     // Add your service logic here
-    public function obtenerFechasDisponibles(): ?array
+    public function obtenerFechasDisponibles_old(): ?array
     {
         try {
             $fechasDisponibles = DiasHabilitadosAgenda::where('estado', true)
@@ -67,7 +67,37 @@ class AgendaService
             throw $e;  // o false si prefieres
         }
     }
+    public function obtenerFechasDisponibles()
+    {
+        try {
+            Carbon::setLocale('es');
+            $fechasDisponibles = DiasHabilitadosAgenda::where('estado', true)
+                ->where('id_servicio_plataforma', 2)
+                ->first();
 
+            $fechasElegibles = [];
+            $diasHabilitadosAgenda = $fechasDisponibles->nro_dias;
+            $agregarHoy = $fechasDisponibles->hoy;
+            $fecha = Carbon::now();
+            if (!$agregarHoy) {
+                $fecha->addDay();
+            }
+
+            while (count($fechasElegibles) < $diasHabilitadosAgenda) {
+                if ($fecha->dayOfWeek !== 0) {
+                    $fechasElegibles[] = [
+                        'fecha' => $fecha->format('Y-m-d'),
+                        'fecha_literal' => mb_strtoupper($fecha->isoFormat('dddd'))
+                    ];
+                }
+                $fecha->addDay();
+            }
+            return $fechasElegibles;
+        } catch (Exception $e) {
+            Log::error('Error obteniendo fechas disponibles: ' . $e->getMessage());
+            throw $e;  // o false si prefieres
+        }
+    }
     protected function obtenerPoblacionAseguradaCache()
     {
         $this->poblacion_asegurada_cache = Cache::get('poblacion_asegurada');
