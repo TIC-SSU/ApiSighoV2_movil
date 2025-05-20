@@ -51,25 +51,25 @@ class AgendaController extends Controller
         }
     }
 
-    public static function fecha_agenda_ocupada_familiar($fecha_agenda, $id_persona)
-    {
-        $verificacionAgenda = new GrupoFamiliarPersona();
-        $countAgendas = 0;
-        $grupoFam = $verificacionAgenda->encontrarPersona($id_persona);
+    // public static function fecha_agenda_ocupada_familiar($fecha_agenda, $id_persona)
+    // {
+    //     $verificacionAgenda = new GrupoFamiliarPersona();
+    //     $countAgendas = 0;
+    //     $grupoFam = $verificacionAgenda->encontrarPersona($id_persona);
 
-        foreach ($grupoFam as $key => $fam) {
-            if (
-                Agenda::where('fecha_agenda', $fecha_agenda)
-                ->where('anulacion_ficha', false)
-                ->where('id_persona', $fam['id'])
-                ->exists()
-            ) {
-                $countAgendas++;
-            }
-        }
-        if ($countAgendas == 0) {
-            return false;
-        }
-        return true;
-    }
+    //     foreach ($grupoFam as $key => $fam) {
+    //         if (
+    //             Agenda::where('fecha_agenda', $fecha_agenda)
+    //             ->where('anulacion_ficha', false)
+    //             ->where('id_persona', $fam['id'])
+    //             ->exists()
+    //         ) {
+    //             $countAgendas++;
+    //         }
+    //     }
+    //     if ($countAgendas == 0) {
+    //         return false;
+    //     }
+    //     return true;
+    // }
 }

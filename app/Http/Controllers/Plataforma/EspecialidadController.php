@@ -4,21 +4,80 @@ namespace App\Http\Controllers\Plataforma;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Plataforma\EspecialidadService;
 use Illuminate\Http\Request;
 use App\Services\UserService;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EspecialidadController extends Controller
 {
     //
-    protected $userService;
+    protected $especialidadService;
 
-    public function __construct(UserService $userService)
+    public function __construct(EspecialidadService $especialidadService)
     {
-        $this->userService = $userService;
+        $this->especialidadService = $especialidadService;
     }
-
-    public function getUsers()
+    public function listar_especialidades(Request $request)
     {
-        return response()->json($this->userService->getAllUsers());
+        try {
+            $fecha = $request->input('fecha');
+            $especialidades = $this->especialidadService->listar_especialidades($fecha);
+
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'data' => $especialidades,
+            ]);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => 404,
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error al listar especialidades',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
+    public function listar_especialidades_cache()
+    {
+        try {
+            return $this->especialidadService->obtenerEspecialidadesCache();
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error al listar especialidades',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
     }
 }
