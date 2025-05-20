@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Plataforma;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Plataforma\EspecialidadService;
+
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+
 class EspecialidadController extends Controller
 {
     //
     protected $especialidadService;
+
 
     public function __construct(EspecialidadService $especialidadService)
     {
