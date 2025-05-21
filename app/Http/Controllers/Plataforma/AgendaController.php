@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AgendaController extends Controller
 {
@@ -17,6 +19,56 @@ class AgendaController extends Controller
     public function __construct(AgendaService $agendaService)
     {
         $this->agendaService = $agendaService;
+    }
+    public function agendamiento(Request $request): JsonResponse
+    {
+        try {
+            $id_persona = $request->input('id_persona');
+            $id_user = $request->input('id_user');
+            $fechaElegida = $request->input('fechaElegida');
+            $horaElegida = $request->input('horaElegida');
+            $id_asignacion_horarioElegido = $request->input('id_asignacion_horarioElegido');
+            $ip = $request->input('ip');
+            $id_persona_titular = $request->input('id_persona_titular');
+            $id_especialistaElegido = $request->input('id_especialistaElegido');
+            $response = $this->agendaService->agendaWebConfirmada(
+                $id_persona,
+                $id_user,
+                $fechaElegida,
+                $horaElegida,
+                $id_asignacion_horarioElegido,
+                $ip,
+                $id_persona_titular,
+                $id_especialistaElegido,
+            );
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => "Agenda agregada exitosamente",
+                'data' => $response
+            ], 200);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error al registrar agenda',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
     }
     public function obtenerFechas(): JsonResponse
     {

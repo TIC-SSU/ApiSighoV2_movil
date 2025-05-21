@@ -2,6 +2,7 @@
 
 namespace App\Services\Plataforma;
 
+use App\Models\Plataforma\Agenda;
 use App\Models\Plataforma\DiasHabilitadosAgenda;
 use Carbon\Carbon;
 use Exception;
@@ -11,61 +12,11 @@ use Illuminate\Support\Facades\Storage;
 
 class AgendaService
 {
-    public $especialidadesDisponibles = [];
-    public $especialistasDisponibles = [];
-    protected $poblacion_asegurada_cache;
-    protected $especialidades_cache;
-    protected $especialistas_cache;
-    protected $horarios_cache;
+    protected $especialistaService;
 
-    //DATOS PERSONA
-    public $fecha_nacimiento;
-    public $nombre_completo;
-    public $matricula;
-    public $tipo_asegurado;
-    public $foto_nombre;
-
-
-    //DATOS AFIRMADO
-    public $fecha_text;
-    public $especialidad_text;
-    public $doctor_select;
-
-    //AGENDA COMO TAL
-    public $fechaElegida;
-    public $diaElegido;
-    // public $especialidadesDisponibles = [];
-    // public $especialistasDisponibles = [];
-
-    //PASOS
-    public $paso = 1;
-    // Add your service logic here
-    public function obtenerFechasDisponibles_old(): ?array
+    public function __construct(EspecialistaService $especialistaService)
     {
-        try {
-            $fechasDisponibles = DiasHabilitadosAgenda::where('estado', true)
-                ->where('id_servicio_plataforma', 2)
-                ->first();
-
-            if (!$fechasDisponibles) {
-                return null;
-            }
-
-            $fechasElegibles = [];
-
-            for ($i = 0; $i < $fechasDisponibles->nro_dias; $i++) {
-                $fecha = $fechasDisponibles->hoy
-                    ? Carbon::now()->addDays($i)
-                    : Carbon::now()->addDays($i + 1);
-
-                $fechasElegibles[] = $fecha->format('Y-m-d');
-            }
-
-            return $fechasElegibles;
-        } catch (Exception $e) {
-            Log::error('Error obteniendo fechas disponibles: ' . $e->getMessage());
-            throw $e;  // o false si prefieres
-        }
+        $this->especialistaService = $especialistaService;
     }
     public function obtenerFechasDisponibles()
     {
@@ -98,35 +49,80 @@ class AgendaService
             throw $e;  // o false si prefieres
         }
     }
-    protected function obtenerPoblacionAseguradaCache()
-    {
-        $this->poblacion_asegurada_cache = Cache::get('poblacion_asegurada');
-    }
 
-    protected function obtenerEspecialidadesCache()
-    {
-        $this->especialidades_cache = Cache::get('especialidades');
-    }
 
-    protected function obtenerEspecialistasCache()
-    {
-        $this->especialistas_cache = Cache::get('especialistas');
-    }
+    // AGENDAMIENTO CONFIRMADO
+    public function agendaWebConfirmada(
+        $id_persona,
+        $id_user,
+        $fechaElegida,
+        $horaElegida,
+        $id_asignacion_horarioElegido,
+        $ip,
+        $id_persona_titular,
+        $id_especialistaElegido
+    ) {
+        // id_asignacion_horarioElegido es el id_asginacion_horario
+        $horaC = Carbon::parse($horaElegida)->format('H');
+        $minutosC = Carbon::parse($horaElegida)->format('i');
+        $diaC = Carbon::parse($fechaElegida)->format('d');
+        $mesC = Carbon::parse($fechaElegida)->format('m');
+        $gestionC = Carbon::parse($fechaElegida)->format('Y');
+        $clave_unica = $id_asignacion_horarioElegido . $horaC . $minutosC . $diaC . $mesC . $gestionC;
 
-    protected function obtenerHorariosCache()
-    {
-        $this->horarios_cache = Cache::get('horarios');
-    }
+        $verificarAgenda = Agenda::where('clave_unica', $clave_unica)->first();
 
-    public function obtenerDatosPersona(int $id_persona)
+        if ($this->existeGrupoFamiliarAgendado($fechaElegida, $id_persona_titular)) {
+            abort(404, 'Ya existe un familar agendado en la fecha');
+        }
+
+        if ($verificarAgenda) {
+            $this->especialistaService->especialistaSeleccionado($id_especialistaElegido, $id_asignacion_horarioElegido, $fechaElegida);
+            abort(404, 'Ya existe una agena en este horario');
+        } else {
+
+            if ($this->existeGrupoFamiliarAgendado($fechaElegida, $id_persona_titular)) {
+                abort(404, 'Ya existe un familar agendado en la fecha');
+            }
+
+            $nuevaAgendaWeb = Agenda::create([
+                'fecha_agenda' => $fechaElegida,
+                'hora_agenda' => $horaElegida,
+                'confirmado' => true,
+                'id_servicio_plataforma' => 2,
+                'id_persona' => $id_persona,
+                'id_asignacion_horario' => $id_asignacion_horarioElegido,
+                'clave_unica' => $clave_unica,
+                'ip' => $ip,
+                'id_user_created' => $id_user,
+            ]);
+
+            if ($nuevaAgendaWeb) {
+                $agenda = $this->especialistaService->especialistaSeleccionado($id_especialistaElegido, $id_asignacion_horarioElegido, $fechaElegida);
+                return $nuevaAgendaWeb;
+            } else {
+                abort(422, 'error al registrar la agenda');
+            }
+        }
+    }
+    public function existeGrupoFamiliarAgendado($fechaSeleccionada, $idPersonaTitular)
     {
-        $this->obtenerPoblacionAseguradaCache();
-        $persona = collect($this->poblacion_asegurada_cache)->firstWhere('id_persona', $id_persona);
-        $this->fecha_nacimiento = $persona['fecha_nacimiento'];
-        $this->nombre_completo = implode(' ', [$persona['nombres'], $persona['p_apellido'], $persona['s_apellido']]);
-        $this->matricula = $persona['matricula_seguro'];
-        $this->tipo_asegurado = $persona['tipo_asegurado'];
-        $this->foto_nombre = $this->obtenerImagenBase64($persona['foto'], $persona['liga']);
+        // $this->obtenerPoblacionAseguradaCache();
+        $poblacion_asegurada_cache = Cache::get('poblacion_asegurada');
+        $persona = collect($poblacion_asegurada_cache)->where('id_persona_titular', $idPersonaTitular);
+        $grupoFamiliar = $persona->pluck('id_persona')->all();
+
+        if (empty($grupoFamiliar)) {
+            return false;
+        }
+
+        $existe = Agenda::where('fecha_agenda', $fechaSeleccionada)
+            ->whereIn('id_persona', $grupoFamiliar)
+            ->where('ficha_extra', false)
+            ->where('anulacion_ficha', false)
+            ->exists();
+
+        return $existe;
     }
     private function obtenerImagenBase64($idFoto, $liga)
     {
@@ -148,4 +144,66 @@ class AgendaService
             return null;
         }
     }
+    // // ----------------------------------------
+    // //PASOS
+    // public $paso = 1;
+    // // Add your service logic here
+    // public function obtenerFechasDisponibles_old(): ?array
+    // {
+    //     try {
+    //         $fechasDisponibles = DiasHabilitadosAgenda::where('estado', true)
+    //             ->where('id_servicio_plataforma', 2)
+    //             ->first();
+
+    //         if (!$fechasDisponibles) {
+    //             return null;
+    //         }
+
+    //         $fechasElegibles = [];
+
+    //         for ($i = 0; $i < $fechasDisponibles->nro_dias; $i++) {
+    //             $fecha = $fechasDisponibles->hoy
+    //                 ? Carbon::now()->addDays($i)
+    //                 : Carbon::now()->addDays($i + 1);
+
+    //             $fechasElegibles[] = $fecha->format('Y-m-d');
+    //         }
+
+    //         return $fechasElegibles;
+    //     } catch (Exception $e) {
+    //         Log::error('Error obteniendo fechas disponibles: ' . $e->getMessage());
+    //         throw $e;  // o false si prefieres
+    //     }
+    // }
+    // protected function obtenerPoblacionAseguradaCache()
+    // {
+    //     $this->poblacion_asegurada_cache = Cache::get('poblacion_asegurada');
+    // }
+
+    // protected function obtenerEspecialidadesCache()
+    // {
+    //     $this->especialidades_cache = Cache::get('especialidades');
+    // }
+
+    // protected function obtenerEspecialistasCache()
+    // {
+    //     $this->especialistas_cache = Cache::get('especialistas');
+    // }
+
+    // protected function obtenerHorariosCache()
+    // {
+    //     $this->horarios_cache = Cache::get('horarios');
+    // }
+
+    // public function obtenerDatosPersona(int $id_persona)
+    // {
+    //     $this->obtenerPoblacionAseguradaCache();
+    //     $persona = collect($this->poblacion_asegurada_cache)->firstWhere('id_persona', $id_persona);
+    //     $this->fecha_nacimiento = $persona['fecha_nacimiento'];
+    //     $this->nombre_completo = implode(' ', [$persona['nombres'], $persona['p_apellido'], $persona['s_apellido']]);
+    //     $this->matricula = $persona['matricula_seguro'];
+    //     $this->tipo_asegurado = $persona['tipo_asegurado'];
+    //     $this->foto_nombre = $this->obtenerImagenBase64($persona['foto'], $persona['liga']);
+    // }
+
 }

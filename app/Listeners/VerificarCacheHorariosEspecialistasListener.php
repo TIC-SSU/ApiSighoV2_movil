@@ -29,8 +29,10 @@ class VerificarCacheHorariosEspecialistasListener
         //
         $key = $event->cacheKey4;
         Log::info('Confirmación, Cache Creado de : ' . $key . ' a las: ' . Carbon::now());
-        $array_collect = Cache::remember($key, now()->addMinutes(60), function () {
+        $array_collect = Cache::remember($key, now()->addMinutes(480), function () {
+
             $fechaActual = Carbon::now()->format('Y-m-d');
+
             $asignacionesHorarios = AsignacionHorario::with([
                 'horarioAsignacionHorario',
                 'consultorioAsignacionHorario.consultorioSedes.residenciaSedes.zonaResidencia',

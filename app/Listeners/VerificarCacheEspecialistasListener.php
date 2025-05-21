@@ -31,7 +31,7 @@ class VerificarCacheEspecialistasListener
         //
         $key = $event->cacheKey3;
         Log::info('Confirmación, Cache Creado de : ' . $key . ' a las: ' . Carbon::now());
-        $array_collect = Cache::remember($key, now()->addMinutes(60), function () {
+        $array_collect = Cache::remember($key, now()->addMinutes(480), function () {
             $fechaActual = Carbon::now()->format('Y-m-d');
 
             $especialistas = Especialista::with([
@@ -59,6 +59,22 @@ class VerificarCacheEspecialistasListener
                 $persona = $especialista->personaEspecialista;
                 $especialidad = $especialista->especialidadEspecialista;
 
+                $serviciosHabilitados = $especialista->especialistaHabilitadoEspecialista
+                    ->filter(function ($servicio) {
+                        return $servicio->id_servicio === 2 && $servicio->estado;
+                    })
+                    ->map(function ($servicio) {
+                        return [
+                            'id_especialista_habilitado_servicio' => $servicio->id,
+                            'fecha_inicio' => $servicio->fecha_inicio,
+                            'fecha_fin' => $servicio->fecha_fin,
+                            'permanente' => $servicio->permanente,
+                            'id_dia' => $servicio->id_dia,
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
                 return [
                     'id_especialista' => $especialista->id,
                     'nombres' => $persona->nombres,
@@ -70,13 +86,19 @@ class VerificarCacheEspecialistasListener
                     'afiliados' => $especialista->afiliados,
                     'estudiantes' => $especialista->estudiantes,
                     'convenios' => $especialista->convenios,
+                    'grado_academico' => $especialista->grado_academico,
+                    'fecha_contrato_inicio' => $especialista->fecha_contrato_inicio,
+                    'fecha_contrato_fin' => $especialista->fecha_contrato_fin,
+                    'permanente' => $especialista->permanente,
                     'foto' => $foto,
+                    'especialistaHabilitado' => $serviciosHabilitados,
                 ];
             })->values()->all();
 
             return $listaEspecialistas;
         });
     }
+
     private function obtenerFotoEspecialista($idFoto)
     {
         try {

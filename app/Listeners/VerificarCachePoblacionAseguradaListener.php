@@ -29,7 +29,7 @@ class VerificarCachePoblacionAseguradaListener
         $key = $event->cacheKey1;
 
         Log::info('Confirmación, Cache Creado de : ' . $key . ' a las: ' . Carbon::now());
-        $array_collect = Cache::remember($key, now()->addMinutes(60), function () {
+        $array_collect = Cache::remember($key, now()->addMinutes(480), function () {
             $arrayDatos = [];
 
             $consultaPersona = Persona::whereNot('id_tipo_asegurado', 0)
