@@ -24,7 +24,7 @@ Route::prefix('auth')->group(function () {
     // Route::post('register', [AuthController::class, 'register']);
 });
 // Rutas protegidas con JWT /* 'redis', */
-Route::middleware([/* 'auth.jwt' */])->group(function () {
+Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('testing')->group(function () {
         require base_path('routes/test/test_routes.php');

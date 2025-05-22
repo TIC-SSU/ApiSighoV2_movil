@@ -80,4 +80,33 @@ class PersonaController extends Controller
             ], 500);
         }
     }
+    public function obtener_id_titular(Request $request)
+    {
+        try {
+            // dd($id_persona);
+            $id_persona = $request->input('id_persona');
+            return $this->personaService->obtener_id_titular_login($id_persona);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => 404,
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage()
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error al obtener imagen',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
 }

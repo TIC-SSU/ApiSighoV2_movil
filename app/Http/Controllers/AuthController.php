@@ -4,11 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Services\Administracion\PersonaService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
+    protected $personaService;
+
+    public function __construct(PersonaService $personaService)
+    {
+        $this->personaService = $personaService;
+    }
     public function register(Request $request)
     {
         $user = User::create([
@@ -43,6 +50,10 @@ class AuthController extends Controller
             }
             // dd($user);
             $request->merge(['id_persona' => $user->id_persona]);
+            $id_titular = $this->personaService->obtener_id_titular_login($user->id_persona);
+            $user->id_persona_titular = $id_titular;
+            // $request->merge(['id_persona_titular' => $id_titular]);
+
             // $agenda = AgendaController::obtener_agenda_con_idPersona($request);
             // if ($agenda->getData()->status != 200) {
             //     $agenda = null;

@@ -3,11 +3,13 @@
 namespace App\Services\Administracion;
 
 use App\Http\Controllers\Plataforma\AgendaController;
+use App\Models\Administracion\Persona;
 use App\Models\Plataforma\EspecialidadHabilitadoServicio;
 use App\Services\ImageService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class PersonaService
 {
@@ -25,6 +27,81 @@ class PersonaService
         return $cache;
     }
 
+    public function obtener_id_titular_login($id_persona)
+    {
+        $persona = Persona::whereNot('id_tipo_asegurado', 0)
+            ->where('afiliado', true)
+            ->where('id', $id_persona)
+            ->with([
+                'tipoAseguradoPersona',
+                'PersonaTitular',
+                'PersonaBeneficiario.titularBeneficiario',
+                'autorizacionInteriorPersonaInterior',
+                'convenioPersona',
+                'PersonaEstudiante'
+            ])
+            ->orderBy('id', 'asc')
+            ->first();
+
+        $idPersonaTitular = 0;
+
+        $tipoAsegurado = $persona->tipoAseguradoPersona->tipo_asegurado ?? null;
+        // dd($tipoAsegurado);
+        switch ($tipoAsegurado) {
+            case 'TITULAR':
+                $titular = $persona->PersonaTitular->where('estado', true)->first();
+                // dd($titular->id_persona);
+                $idPersonaTitular = $titular->id_persona ?? 0;
+                // $liga = 'Afiliacion/FOTOS/';
+                // $foto = $titular->foto_nombre ?? null;
+                return $idPersonaTitular;
+                // break;
+
+            case 'BENEFICIARIO DEL INTERIOR':
+                $autorizacionInterior = $persona->autorizacionInteriorPersonaInterior->where('estado', true)->first();
+                $idPersonaTitular = $autorizacionInterior->id_persona_titular ?? 0;
+                // $liga = 'Vigencia/FOTOS/CONVENIO/';
+                // $foto = $autorizacionInterior->foto_nombre ?? null;
+                return $idPersonaTitular;
+
+            case (Str::contains($tipoAsegurado, 'BENEFICIARIO')):
+                $beneficiario = $persona->PersonaBeneficiario->where('estado', true)->first();
+                // dd($beneficiario);
+                $idPersonaTitular = $beneficiario->titularBeneficiario->id_persona ?? 0;
+                // $liga = 'Afiliacion/FOTOS/';
+                // $foto = $beneficiario->foto_nombre ?? null;
+                return $idPersonaTitular;
+
+            case 'TITULAR DEL INTERIOR':
+                $autorizacionInteriorTitular = $persona->autorizacionInteriorPersonaInterior->where('estado', true)->first();
+                $idPersonaTitular = $autorizacionInteriorTitular->id_persona_titular ?? 0;
+                // $liga = 'Vigencia/FOTOS/CONVENIO/';
+                // $foto = $autorizacionInteriorTitular->foto_nombre ?? null;
+                return $idPersonaTitular;
+
+            case 'TITULAR CONVENIO':
+                $convenio = $persona->convenioPersona->where('estado', true)->first();
+                $idPersonaTitular = $convenio->id_persona ?? 0;
+                // $liga = 'Vigencia/FOTOS/CONVENIO/';
+                // $foto = $convenio->foto_nombre ?? null;
+                return $idPersonaTitular;
+
+            case 'ESTUDIANTE':
+                $estudiante = $persona->PersonaEstudiante
+                    ->where('estado_vigencia', true)
+                    ->where('estado', true)
+                    ->where('estado_validar', 'AFILIADO')
+                    ->first();
+                $idPersonaTitular = $estudiante->id_persona ?? 0;
+                // $liga = 'Afiliacion/SSUE/FOTOS/';
+                // $foto = $estudiante->foto_nombre ?? null;
+                return $idPersonaTitular;
+
+            default:
+                return $idPersonaTitular = 0;
+                // break;
+        }
+    }
     public function obtener_imagen_persona($id_persona)
     {
         $poblacion_asegurada_cache = $this->obtenerPoblacionAseguradaCache();
