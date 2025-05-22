@@ -1,30 +1,17 @@
-# Ignora el entorno local
 # .env
-# .env.*
-
-# Ignora archivos de configuración del host
+.env.*
 docker-compose.yml
 Dockerfile
 .dockerignore
-
-# Ignora archivos de Git
-# .git
-# .gitignore
-
-# Ignora node_modules (lo manejarás dentro del contenedor si es necesario)
+.git
+.gitignore
 node_modules
 npm-debug.log
 yarn-error.log
-
-# Ignora caché de Composer
 vendor/
-composer.lock
-
-# Ignora tests y archivos de PHPUnit (opcional, según si se usan)
+# composer.lock
 phpunit.xml
 tests/
-
-# Ignora archivos del IDE
 *.swp
 *.swo
 *.bak
@@ -32,8 +19,6 @@ tests/
 *.log
 .idea/
 .vscode/
-
-# Otros temporales
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*

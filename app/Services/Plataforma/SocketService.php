@@ -3,6 +3,8 @@
 namespace App\Services\Plataforma;
 
 use App\Models\Administracion\LinkServicio;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SocketService
 {
@@ -18,7 +20,7 @@ class SocketService
         return $url_server_socket;
     }
 
-    public function url_server_socket_2()
+    private function url_server_socket_2()
     {
         $servicio = LinkServicio::where('nombre_servicio', 'SERVER_SOCKET_IO')->first();
 
@@ -29,51 +31,27 @@ class SocketService
         return $url_server_socket;
     }
 
-    // protected static function booted()
-    // {
-    //     static::creating(function ($agenda) {
-    //         $servicio = LinkServicio::where('link_servicio', 'SERVER_SOCKET_IO')->first();
-    //         // if(!$url_server_socket)
-    //         $url_server_socket = $servicio->link_servicio;
+    public function agregar_agenda($agenda)
+    {
 
-    //         try {
-    //             $response = Http::post($url_server_socket . '/agenda-socket', [
-    //                 'message' => "Creación de registro de agenda",
-    //                 'data' => $agenda
-    //             ]);
 
-    //             // Verificar si la respuesta fue exitosa
-    //             if ($response->status() == 500) {
-    //                 throw new \Exception("Error en la comunicacion con el socket. Código de respuesta: " . $response->status());
-    //             }
-    //         } catch (\Exception $e) {
-    //             // Loguear el error para diagnóstico
-    //             Log::error("Error al intentar conectar con el socket: " . $e->getMessage());
+        try {
+            $url_server_socket = $this->url_server_socket_2();
+            $response = Http::post($url_server_socket . '/agenda-socket', [
+                'message' => "Creación de registro de agenda",
+                'data' => $agenda
+            ]);
 
-    //             // Lanzar una excepción para interrumpir la creación del registro
-    //             throw new \Exception("No se pudo completar la creacion del registro debido a un error con el socket.");
-    //         }
-    //     });
-    //     try {
-    //         //code...
-    //         static::updating(function ($agenda) {
-    //             // Lógica después de actualizar
-    //             $url_server_socket = config('app.host_server_socket_io');
-    //             $response = Http::post($url_server_socket . '/agenda-socket', [
-    //                 'message' => "actualizacion de registro de agenda",
-    //                 'data' => $agenda
-    //             ]);
-    //             if ($response->status() == 500) {
-    //                 throw new \Exception("Error en la comunicacion con el socket. Código de respuesta: " . $response->status());
-    //             }
-    //             // Log::info("Agenda actualizada: " . $agenda->id);
-    //         });
-    //     } catch (\Exception $e) {
-    //         // Loguear el error para diagnóstico
-    //         Log::error("Error al intentar conectar con el socket: " . $e->getMessage());
+            // Verificar si la respuesta fue exitosa
+            if ($response->status() == 500) {
+                throw new \Exception("Error en la comunicacion con el socket. Código de respuesta: " . $response->status());
+            }
+        } catch (\Exception $e) {
+            // Loguear el error para diagnóstico
+            Log::error("Error al intentar conectar con el socket: " . $e->getMessage());
 
-    //         // Lanzar una excepción para interrumpir la creación del registro
-    //         throw new \Exception("No se pudo completar la actualizacion del registro debido a un error con el socket.");
-    //     }
-    // }
+            // Lanzar una excepción para interrumpir la creación del registro
+            throw new \Exception("No se pudo completar la creacion del registro debido a un error con el socket.");
+        }
+    }
 }

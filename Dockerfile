@@ -1,26 +1,66 @@
-# Imagen base PHP con FPM (puede ser cli si prefieres)
-FROM php:8.2-cli
+FROM php:8.2-cli-alpine AS build
 
-# Instala dependencias del sistema necesarias incluyendo libpq-dev para pdo_pgsql y nano
-RUN apt-get update && apt-get install -y \
-    zip unzip curl git libpng-dev libonig-dev libxml2-dev libzip-dev libpq-dev nano \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip ftp pdo_pgsql
+RUN apk add --no-cache \
+    bash \
+    libzip-dev \
+    libpng-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    libpq \
+    curl-dev \
+    openssl-dev \
+    gcc \
+    g++ \
+    make \
+    autoconf \
+    pkgconf \
+ && docker-php-ext-install \
+    ftp \
+    pdo_pgsql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+ && rm -rf /var/cache/apk/*
 
-# Copia Composer desde la imagen oficial
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia el código del proyecto al contenedor
+COPY composer.json composer.lock ./
+
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
 COPY . .
 
-# Instala las dependencias de Laravel
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+FROM php:8.2-cli-alpine
 
-# Asigna permisos correctos (ajustado al WORKDIR actual)
-RUN chown -R www-data:www-data /app \
-    && chmod -R 755 /app/storage
+RUN apk add --no-cache \
+    bash \
+    libzip-dev \
+    libpng-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    libpq \
+    curl-dev \
+    openssl-dev \
+ && docker-php-ext-install \
+    ftp \
+    pdo_pgsql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+ && rm -rf /var/cache/apk/*
 
-# Comando por defecto al iniciar el contenedor
+WORKDIR /app
+
+COPY --from=build /app /app
+
+RUN chmod -R 755 storage bootstrap/cache
+
+EXPOSE 8000
+
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

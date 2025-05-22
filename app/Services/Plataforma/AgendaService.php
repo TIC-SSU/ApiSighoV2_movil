@@ -62,6 +62,16 @@ class AgendaService
         $id_persona_titular,
         $id_especialistaElegido
     ) {
+        // dd(
+        //     $id_persona,
+        //     $id_user,
+        //     $fechaElegida,
+        //     $horaElegida,
+        //     $id_asignacion_horarioElegido,
+        //     $ip,
+        //     $id_persona_titular,
+        //     $id_especialistaElegido
+        // );
         // id_asignacion_horarioElegido es el id_asginacion_horario
         $horaC = Carbon::parse($horaElegida)->format('H');
         $minutosC = Carbon::parse($horaElegida)->format('i');
@@ -98,7 +108,7 @@ class AgendaService
             ]);
 
             if ($nuevaAgendaWeb) {
-                $agenda = $this->especialistaService->especialistaSeleccionado($id_especialistaElegido, $id_asignacion_horarioElegido, $fechaElegida);
+                // $agenda = $this->especialistaService->especialistaSeleccionado($id_especialistaElegido, $id_asignacion_horarioElegido, $fechaElegida);
                 return $nuevaAgendaWeb;
             } else {
                 abort(422, 'error al registrar la agenda');
