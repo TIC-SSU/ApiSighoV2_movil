@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Plataforma\SocketController;
 use App\Http\Controllers\Testing\TestController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,3 +11,6 @@ Route::get('obtenerTitularesCache', [TestController::class, 'obtenerTitularesCac
 Route::get('obtener_personas_cache/{id_persona}', [TestController::class, 'obtener_personas_cache']);
 Route::get('obtener_personas/{id_persona}', [TestController::class, 'obtener_personas']);
 Route::get('almacenar_personas_en_cache', [TestController::class, 'almacenar_personas_en_cache']);
+
+// CONEXION CON EL SERVIDOR SOCKET IO
+Route::get('obtener_enlace', [SocketController::class, 'obtener_enlace']);
