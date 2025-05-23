@@ -39,7 +39,7 @@ class EspecialistaService
     }
     public function especialistas_datos()
     {
-        $datos = Especialista::get();
+        $datos = Especialista::with(['personaEspecialista'])->get();
         if ($datos->isEmpty()) {
             abort(404, 'no se encontro especialistas');
         }
