@@ -156,7 +156,7 @@ class EspecialistaService
         }
 
         if (empty($horariosDisponibles)) {
-            abort('No hay especialistas disponibles.', 404);
+            abort(404, 'No hay especialistas disponibles.');
         }
 
         return $horariosDisponibles;
