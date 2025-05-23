@@ -156,7 +156,7 @@ class EspecialistaService
         }
 
         if (empty($horariosDisponibles)) {
-            return response()->json(['mensaje' => 'No hay especialistas disponibles.'], 204);
+            abort('No hay especialistas disponibles.', 404);
         }
 
         return $horariosDisponibles;

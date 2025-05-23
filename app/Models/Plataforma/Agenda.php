@@ -15,6 +15,7 @@ use App\Models\Plataforma\AsignacionHorario;
 use App\Models\Plataforma\ServicioPlataforma;
 
 use App\Models\Plataforma\SuspensionHorario;
+use App\Services\Plataforma\SocketService;
 use Illuminate\Support\Facades\Log;
 
 class Agenda extends Model
@@ -41,33 +42,33 @@ class Agenda extends Model
         'ip',
     ];
 
-    // protected static function booted()
-    // {
-    //     static::created(function ($agenda) {
-    //         $url_server_socket = config('app.host_server_socket_io');
-    //         // $url_server_socket = 'http://192.168.1.84:6001';
-    //         // $url_server_socket = 'http://192.168.4.230:6001';
+    protected static function booted()
+    {
+        static::creating(function ($agenda) {
+            try {
+                $servicio = LinkServicio::where('nombre_servicio', 'SERVER_SOCKET_IO')->first();
+                if (!$servicio) {
+                    throw new \Exception("Servidor socket no registrado en la Base de datos");
+                }
+                $url_server_socket = $servicio->link_servicio;
+                $response = Http::post($url_server_socket . '/agenda-socket', [
+                    'message' => "Creación de registro de agenda",
+                    'data' => $agenda
+                ]);
 
-    //         // try {
-    //         // $response=
-    //         Http::post($url_server_socket . '/agenda-socket', [
-    //             'message' => "Creacion de registro de agenda",
-    //             'data' => $agenda
-    //         ]);
+                // Verificar si la respuesta fue exitosa
+                if ($response->status() == 500) {
+                    throw new \Exception("Error en la comunicacion con el socket. Código de respuesta: " . $response->status());
+                }
+            } catch (\Exception $e) {
+                // Loguear el error para diagnóstico
+                Log::error("Error al intentar conectar con el socket: " . $e->getMessage());
 
-    //         // Verificar si la respuesta fue exitosa
-    //         //     if ($response->status() == 500) {
-    //         //         throw new \Exception("Error en la comunicacion con el socket. Código de respuesta: " . $response->status());
-    //         //     }
-    //         // } catch (\Exception $e) {
-    //         //     // Loguear el error para diagnóstico
-    //         //     Log::error("Error al intentar conectar con el socket: " . $e->getMessage());
-
-    //         //     // Lanzar una excepción para interrumpir la creación del registro
-    //         //     throw new \Exception("No se pudo completar la creacion del registro debido a un error con el socket.");
-    //         // }
-    //     });
-    // }
+                // Lanzar una excepción para interrumpir la creación del registro
+                throw new \Exception("No se pudo completar la creacion del registro debido a un error con el socket.");
+            }
+        });
+    }
     //Relaciones con la tabla Asignacion Horario
     public function asignacionHorarioAgenda()
     {

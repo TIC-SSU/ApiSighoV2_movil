@@ -1,25 +1,30 @@
-# .env
-.env.*
-docker-compose.yml
-Dockerfile
-.dockerignore
+# Control de versiones
 .git
 .gitignore
-node_modules
-npm-debug.log
-yarn-error.log
+
+# Dependencias locales que no se necesitan
 vendor/
-# composer.lock
-phpunit.xml
-tests/
-*.swp
-*.swo
-*.bak
-*.tmp
+node_modules/
+
+# Archivos locales de entorno y configuración
+# .env
+.env.*.local
+
+# Logs, caché y archivos temporales
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# Archivos de configuración que no necesitas
+docker-compose.yml
+Dockerfile
+
+# Archivos de sistema y temporales
 *.log
-.idea/
-.vscode/
-storage/logs/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
+*.cache
+.DS_Store
+
+# Otros
+npm-debug.log*
+yarn-error.log*

@@ -20,7 +20,7 @@ class SocketService
         return $url_server_socket;
     }
 
-    private function url_server_socket_2()
+    public function url_server_socket_2()
     {
         $servicio = LinkServicio::where('nombre_servicio', 'SERVER_SOCKET_IO')->first();
 
@@ -33,8 +33,6 @@ class SocketService
 
     public function agregar_agenda($agenda)
     {
-
-
         try {
             $url_server_socket = $this->url_server_socket_2();
             $response = Http::post($url_server_socket . '/agenda-socket', [
