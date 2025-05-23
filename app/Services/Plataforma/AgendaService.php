@@ -51,6 +51,24 @@ class AgendaService
         }
     }
 
+    public function obtener_agenda_persona($id_persona)
+    {
+        $datos = Agenda::where('id_persona', $id_persona)->where('anulacion_ficha', false)
+            ->with([
+                'asignacionHorarioAgenda.especialistaAsignacionHorario.personaEspecialista',
+                'asignacionHorarioAgenda.especialistaAsignacionHorario.especialidadEspecialista',
+                'asignacionHorarioAgenda.consultorioAsignacionHorario',
+                // 'asignacionHorarioAgenda.consultorioAsignacionHorario.zonaConsultorio',
+                'asignacionHorarioAgenda.consultorioAsignacionHorario.consultorioSedes',
+            ])
+            ->orderBy('fecha_agenda', 'desc')
+            ->get();
+        if ($datos->isEmpty()) {
+            abort(404, 'No se econtraron datos en Agenda');
+        }
+        return $datos;
+    }
+
     public function anular_agenda(int $id_agenda)
     {
         // if (!$id_agenda) {

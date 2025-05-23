@@ -15,3 +15,4 @@ Route::post('horario_especialista', [EspecialistaController::class, 'horario_esp
 Route::post('agendamiento', [AgendaController::class, 'agendamiento']);
 
 Route::post('anular_agenda', [AgendaController::class, 'anular_agenda']);
+Route::post('obtener_agenda_persona', [AgendaController::class, 'obtener_agenda_persona']);

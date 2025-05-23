@@ -32,6 +32,18 @@ class AgendaController extends Controller
             $ip = $request->input('ip');
             $id_persona_titular = $request->input('id_persona_titular');
             $id_especialistaElegido = $request->input('id_especialistaElegido');
+
+            $request->validate([
+                'id_persona' => 'required|integer',
+                'id_user' => 'requered|integer',
+                'fechaElegida' => 'requered',
+                'horaElegida' => 'requered',
+                'id_asignacion_horarioElegido' => 'requered|integer',
+                'ip' => 'requered',
+                'id_persona_titular' => 'requered|integer',
+                'id_especialistaElegido' => 'requered|integer',
+            ]);
+
             $response = $this->agendaService->agendaWebConfirmada(
                 $id_persona,
                 $id_user,
@@ -48,6 +60,13 @@ class AgendaController extends Controller
                 'message' => "Agenda agregada exitosamente",
                 'data' => $response
             ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (NotFoundHttpException $e) {
             return response()->json([
                 'status' => $e->getStatusCode(),
@@ -71,7 +90,50 @@ class AgendaController extends Controller
             ], 500);
         }
     }
-
+    public function obtener_agenda_persona(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'id_persona' => 'required|integer',
+            ]);
+            $id_persona = $request->input('id_persona');
+            $response = $this->agendaService->obtener_agenda_persona($id_persona);
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => "Peticion Existosa",
+                'data' => $response
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error en agendaService',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
     public function anular_agenda(Request $request): JsonResponse
     {
         try {
