@@ -6,6 +6,7 @@ use App\Models\Plataforma\Agenda;
 use App\Models\Plataforma\DiasHabilitadosAgenda;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -50,6 +51,26 @@ class AgendaService
         }
     }
 
+    public function anular_agenda(int $id_agenda)
+    {
+        // if (!$id_agenda) {
+        //     abort(400, 'Faltan parámetros obligatorios. id_agenda');
+        // }
+        $agenda = Agenda::find($id_agenda);
+        if (!$agenda) {
+            abort(404, 'No se encontró el registro en Agenda');
+        }
+        $clave_unica = $agenda->clave_unica;
+        $fecha_anulacion = Carbon::now()->format('Y-m-d');  // Obtener la fecha actual
+        // $hora_agenda = $agenda->hora_agenda;
+        $hora_actual = Carbon::now()->format('H:i:s');  // Obtener la hora actual
+        $agenda->update([
+            'clave_unica' => $clave_unica . "-A-" . $hora_actual,
+            'fecha_anulacion' => $fecha_anulacion,
+            'anulacion_ficha' => true
+        ]);
+        return $agenda;
+    }
 
     // AGENDAMIENTO CONFIRMADO
     public function agendaWebConfirmada(
@@ -154,6 +175,9 @@ class AgendaService
             return null;
         }
     }
+
+    // pasoa para suspencion de Agenda
+
     // // ----------------------------------------
     // //PASOS
     // public $paso = 1;

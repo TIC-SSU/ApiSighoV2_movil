@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Validation\ValidationException;
 
 class AgendaController extends Controller
 {
@@ -64,6 +65,52 @@ class AgendaController extends Controller
                 'status' => 500,
                 'success' => false,
                 'message' => 'Error al registrar agenda',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
+
+    public function anular_agenda(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'id_agenda' => 'required|integer',
+            ]);
+
+            $response = $this->agendaService->anular_agenda($validated['id_agenda']);
+
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => "Petición exitosa",
+                'data' => $response,
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error en agendaService',
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
                 'file' => $th->getFile(),

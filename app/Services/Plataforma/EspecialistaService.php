@@ -56,7 +56,7 @@ class EspecialistaService
         if (!$especialistas_cache) {
             abort(404, 'No se encontraron especialistas en caché.');
         }
-
+        // dd($especialistas_cache);
         $especialistas = collect($especialistas_cache);
 
         $especialistasFiltrados = $especialistas->filter(function ($esp) use ($id_especialidad, $fechaElegida, $tipo_asegurado) {
@@ -75,7 +75,7 @@ class EspecialistaService
 
             return true;
         });
-
+        // dd($especialistasFiltrados);
         $especialistasDisponibles = collect();
 
         foreach ($especialistasFiltrados as $especialista) {
@@ -98,7 +98,7 @@ class EspecialistaService
                 ]);
             }
         }
-
+        // dd($especialistasDisponibles);
         // === PASO EXTRA: Verificación de horarios y fichas ===
         $horariosDisponibles = [];
 
@@ -154,7 +154,7 @@ class EspecialistaService
                 }
             }
         }
-
+        // dd($horariosDisponibles);
         if (empty($horariosDisponibles)) {
             abort(404, 'No hay especialistas disponibles.');
         }

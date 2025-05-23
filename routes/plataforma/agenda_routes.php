@@ -13,3 +13,5 @@ Route::get('listar_especialidades_cache', [EspecialidadController::class, 'lista
 Route::post('especialistas_disponibles', [EspecialistaController::class, 'especialistas_disponibles']);
 Route::post('horario_especialista', [EspecialistaController::class, 'horario_especialista']);
 Route::post('agendamiento', [AgendaController::class, 'agendamiento']);
+
+Route::post('anular_agenda', [AgendaController::class, 'anular_agenda']);
