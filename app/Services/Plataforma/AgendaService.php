@@ -4,6 +4,7 @@ namespace App\Services\Plataforma;
 
 use App\Models\Plataforma\Agenda;
 use App\Models\Plataforma\DiasHabilitadosAgenda;
+use App\Models\Plataforma\Especialista;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -68,6 +69,7 @@ class AgendaService
         }
         return $datos;
     }
+
 
     public function anular_agenda(int $id_agenda)
     {

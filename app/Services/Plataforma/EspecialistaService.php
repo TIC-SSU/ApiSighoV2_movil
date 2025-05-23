@@ -3,6 +3,7 @@
 namespace App\Services\Plataforma;
 
 use App\Models\Plataforma\Agenda;
+use App\Models\Plataforma\Especialista;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -36,7 +37,14 @@ class EspecialistaService
         $horarios_cache = Cache::get('horarios');
         return $horarios_cache;
     }
-
+    public function especialistas_datos()
+    {
+        $datos = Especialista::get();
+        if ($datos->isEmpty()) {
+            abort(404, 'no se encontro especialistas');
+        }
+        return $datos;
+    }
     public function especialistas_disponibles($id_especialidad, $fechaElegida, $tipo_asegurado)
     {
         if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
