@@ -35,13 +35,13 @@ class AgendaController extends Controller
 
             $request->validate([
                 'id_persona' => 'required|integer',
-                'id_user' => 'requered|integer',
-                'fechaElegida' => 'requered',
-                'horaElegida' => 'requered',
-                'id_asignacion_horarioElegido' => 'requered|integer',
-                'ip' => 'requered',
-                'id_persona_titular' => 'requered|integer',
-                'id_especialistaElegido' => 'requered|integer',
+                'id_user' => 'required|integer',
+                'fechaElegida' => 'required',
+                'horaElegida' => 'required',
+                'id_asignacion_horarioElegido' => 'required|integer',
+                'ip' => 'required',
+                'id_persona_titular' => 'required|integer',
+                'id_especialistaElegido' => 'required|integer',
             ]);
 
             $response = $this->agendaService->agendaWebConfirmada(
