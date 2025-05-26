@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Plataforma;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\Plataforma\EspecialidadService;
-
 use Illuminate\Http\Request;
-use App\Services\UserService;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Validation\ValidationException;
 
+use App\Services\Plataforma\EspecialidadService;
 
 class EspecialidadController extends Controller
 {
@@ -25,14 +23,26 @@ class EspecialidadController extends Controller
     public function listar_especialidades(Request $request)
     {
         try {
+            $request->validate([
+                'fecha' => 'required',
+                'id_persona_titular' => 'required',
+            ]);
             $fecha = $request->input('fecha');
-            $especialidades = $this->especialidadService->listar_especialidades($fecha);
+            $id_persona_titular = $request->input('id_persona_titular');
+            $especialidades = $this->especialidadService->listar_especialidades($fecha, $id_persona_titular);
 
             return response()->json([
                 'status' => 200,
                 'success' => true,
                 'data' => $especialidades,
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (NotFoundHttpException $e) {
             return response()->json([
                 'status' => 404,

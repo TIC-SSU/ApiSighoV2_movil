@@ -160,19 +160,28 @@ class AgendaService
     {
         // $this->obtenerPoblacionAseguradaCache();
         $poblacion_asegurada_cache = Cache::get('poblacion_asegurada');
+        if (empty($poblacion_asegurada_cache)) {
+            abort(404, 'No hay poblacion asegurada en cache');
+        }
         $persona = collect($poblacion_asegurada_cache)->where('id_persona_titular', $idPersonaTitular);
+        // dd($persona);
         $grupoFamiliar = $persona->pluck('id_persona')->all();
-
+        // dd($grupoFamiliar);
         if (empty($grupoFamiliar)) {
             return false;
         }
+        // dd($fechaSeleccionada, $idPersonaTitular);
 
+        // $id_titular = $grupoFamiliar[0];
+        // $prueba = Agenda::whereIn('id_persona', $grupoFamiliar)
+        //     ->get();
+        // dd($prueba, 'porque no sale');
         $existe = Agenda::where('fecha_agenda', $fechaSeleccionada)
             ->whereIn('id_persona', $grupoFamiliar)
             ->where('ficha_extra', false)
             ->where('anulacion_ficha', false)
             ->exists();
-
+        // dd($existe);
         return $existe;
     }
     private function obtenerImagenBase64($idFoto, $liga)

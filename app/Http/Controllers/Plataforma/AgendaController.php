@@ -179,11 +179,11 @@ class AgendaController extends Controller
             ], 500);
         }
     }
-    public function obtenerFechas(): JsonResponse
+    public function obtenerFechas(Request $request): JsonResponse
     {
         try {
-            $fechas = $this->agendaService->obtenerFechasDisponibles();
 
+            $fechas = $this->agendaService->obtenerFechasDisponibles();
             if (is_null($fechas)) {
                 return response()->json([
                     'success' => false,
@@ -200,6 +200,13 @@ class AgendaController extends Controller
                 'message' => 'Fechas disponibles para este servicio.',
                 'data' => $fechas
             ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (Exception $e) {
             // Loguear el error
             Log::error('Error al obtener las fechas: ' . $e->getMessage());
