@@ -8,21 +8,17 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
-Route::get('/run-schedule', function () {
-    Artisan::call('schedule:run');
-    return response()->json(['output' => Artisan::output()]);
-});
 Route::prefix('auth')->group(function () {
     // Rutas sin autenticación
     Route::post('login', [AuthController::class, 'login']);
     // Route::post('register', [AuthController::class, 'register']);
 });
-// Route::middleware(['api'])->group(function () {
-Route::prefix('auth')->group(function () {
-    // Rutas sin autenticación
-    Route::post('login', [AuthController::class, 'login']);
-    // Route::post('register', [AuthController::class, 'register']);
-});
+// // Route::middleware(['api'])->group(function () {
+// Route::prefix('auth')->group(function () {
+//     // Rutas sin autenticación
+//     Route::post('login', [AuthController::class, 'login']);
+//     // Route::post('register', [AuthController::class, 'register']);
+// });
 // Rutas protegidas con JWT /* 'redis', */
 Route::middleware(['auth.jwt'])->group(function () {
 
