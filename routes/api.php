@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -39,5 +37,10 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('plataforma')->group(function () {
         require base_path('routes/plataforma/agenda_routes.php');
+    });
+    Route::prefix('auth')->group(function () {
+        // Rutas sin autenticación
+        Route::post('logout', [AuthController::class, 'logout']);
+        // Route::post('register', [AuthController::class, 'register']);
     });
 });
