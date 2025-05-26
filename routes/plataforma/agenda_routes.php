@@ -7,7 +7,7 @@ use App\Http\Controllers\Plataforma\EspecialidadController;
 
 // Route::get('test', [TestController::class, 'test']);
 // PASO 1
-Route::post('obtenerFechas', [AgendaController::class, 'obtenerFechas']);
+Route::get('obtenerFechas', [AgendaController::class, 'obtenerFechas']);
 // PASO 2
 Route::post('listar_especialidades', [EspecialidadController::class, 'listar_especialidades']);
 Route::get('listar_especialidades_cache', [EspecialidadController::class, 'listar_especialidades_cache']);

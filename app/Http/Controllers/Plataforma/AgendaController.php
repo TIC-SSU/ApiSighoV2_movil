@@ -179,7 +179,7 @@ class AgendaController extends Controller
             ], 500);
         }
     }
-    public function obtenerFechas(Request $request): JsonResponse
+    public function obtenerFechas(): JsonResponse
     {
         try {
 
