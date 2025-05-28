@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Http\JsonResponse;
 use App\Services\Plataforma\EspecialidadService;
 
 class EspecialidadController extends Controller
@@ -20,6 +20,41 @@ class EspecialidadController extends Controller
     {
         $this->especialidadService = $especialidadService;
     }
+
+    public function top_especialidades(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->especialidadService->top_especialidades();
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => "TOP Especialidades mas buscadas",
+                'data' => $response
+            ], 200);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error en especialidadService',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
+
     public function listar_especialidades(Request $request)
     {
         try {

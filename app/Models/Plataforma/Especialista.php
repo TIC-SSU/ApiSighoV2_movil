@@ -35,50 +35,70 @@ class Especialista extends Model
         'convenios',
         'id_user_created',
         'id_user_updated',
-    ] ;
+    ];
 
     //Relaciones con la tabla Tipo Atencion Asegurado
-    public function tipoAtencionAseguradoEspecialista(){
-        return $this->hasMany(TipoAtencionAsegurado::class,'id_especialista', 'id');
+    public function tipoAtencionAseguradoEspecialista()
+    {
+        return $this->hasMany(TipoAtencionAsegurado::class, 'id_especialista', 'id');
     }
     // Relacion con la tabla Persona
-    public function personaEspecialista(){
-        return $this->belongsTo(Persona::class,'id_persona', 'id');
+    public function personaEspecialista()
+    {
+        return $this->belongsTo(Persona::class, 'id_persona', 'id');
     }
     //Relaciones con la tabla Suspension Vacacion
-    public function suspensionVacacionEspecialista(){
-        return $this->hasMany(SuspensionVacacion::class,'id_especialista', 'id');
+    public function suspensionVacacionEspecialista()
+    {
+        return $this->hasMany(SuspensionVacacion::class, 'id_especialista', 'id');
     }
 
     //Relaciones con la tabla Especialista Habilitado Servicio
-    public function especialistaHabilitadoEspecialista(){
-        return $this->hasMany(EspecialistaHabilitadoServicio::class,'id_especialista', 'id');
+    public function especialistaHabilitadoEspecialista()
+    {
+        return $this->hasMany(EspecialistaHabilitadoServicio::class, 'id_especialista', 'id');
     }
 
     //Relaciones con la tabla Especialidad
-    public function especialidadEspecialista(){
-        return $this->belongsTo(Especialidad::class,'id_especialidad', 'id');
+    public function especialidadEspecialista()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con la Tabla Asignacion Consultorio
-    public function asignacionConsultorioEspecialista(){
-        return $this->hasMany(AsignacionConsultorio::class,'id_especialista','id');
+    public function asignacionConsultorioEspecialista()
+    {
+        return $this->hasMany(AsignacionConsultorio::class, 'id_especialista', 'id');
     }
 
     //Relaciones con la Tabla Usuario
-    public function usuarioCreador(){
-        return $this->belongsTo(User::class,'id_user_created','id');
-    }    
+    public function usuarioCreador()
+    {
+        return $this->belongsTo(User::class, 'id_user_created', 'id');
+    }
 
-    public function usuarioEditor(){
-        return $this->belongsTo(User::class,'id_user_updated','id');
+    public function usuarioEditor()
+    {
+        return $this->belongsTo(User::class, 'id_user_updated', 'id');
     }
-      //Relaciones con la tabla AsigancionHorario
-      public function asignacionHorarioEspecialista(){
-        return $this->hasMany(AsignacionHorario::class, 'id_especialista','id');
+    //Relaciones con la tabla AsigancionHorario
+    public function asignacionHorarioEspecialista()
+    {
+        return $this->hasMany(AsignacionHorario::class, 'id_especialista', 'id');
     }
-    public function persona(){
-        return $this->belongsTo(Persona::class,'id_persona', 'id');
+    public function persona()
+    {
+        return $this->belongsTo(Persona::class, 'id_persona', 'id');
     }
-    
+    public function agendas()
+    {
+        return $this->hasManyThrough(
+            Agenda::class,
+            AsignacionHorario::class,
+            'id_especialista',      // FK en asignacion_horario hacia especialista
+            'id_asignacion_horario', // FK en agenda hacia asignacion_horario
+            'id',                   // PK especialista
+            'id'                    // PK asignacion_horario
+        );
+    }
 }

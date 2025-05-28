@@ -24,3 +24,5 @@ Route::post('obtener_agenda_persona', [AgendaController::class, 'obtener_agenda_
 Route::get('especialistas_datos', [EspecialistaController::class, 'especialistas_datos']);
 // --------------- PRUEBAS ------------------------
 Route::get('contar_horario', [EspecialistaController::class, 'contar_horario'])->name('contar_horario');
+Route::get('top_especialistas', [EspecialistaController::class, 'top_especialistas'])->name('top_especialistas');
+Route::get('top_especialidades', [EspecialidadController::class, 'top_especialidades'])->name('top_especialidades');

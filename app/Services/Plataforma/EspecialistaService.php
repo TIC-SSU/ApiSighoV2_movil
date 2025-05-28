@@ -28,21 +28,23 @@ class EspecialistaService
     // public $edadPediatria;
     // Add your service logic here
 
-    public function horarios_mas_citas()
+    public function horarios_mas_citas(): int
     {
-        $repeticiones = Agenda::with(['asignacionHorarioAgenda.especialistaDetalles'])->select('id_asignacion_horario', DB::raw('COUNT(id_asignacion_horario) as rep'))
+        $repeticiones = Agenda::select('id_asignacion_horario', DB::raw('COUNT(id_asignacion_horario) as rep'))
             ->groupBy('id_asignacion_horario')
             ->orderByDesc('rep')
-            ->limit(5)
-            ->get();
+            ->pluck('id_asignacion_horario')
+            ->toArray();
         return $repeticiones;
     }
     public function top_especialistas()
     {
-        $conteo = $this->horarios_mas_citas();
-        $especialistas = [];
-        foreach ($conteo as $dato) {
-        }
+        $topEspecialistas = Especialista::with('persona') // si quieres traer datos de persona
+            ->withCount('agendas')                         // cuenta total de agendas relacionadas
+            ->orderByDesc('agendas_count')                 // ordenar por cantidad de agendas
+            ->limit(5)
+            ->get();
+        return $topEspecialistas;
     }
     public function obtenerEspecialistasCache()
     {

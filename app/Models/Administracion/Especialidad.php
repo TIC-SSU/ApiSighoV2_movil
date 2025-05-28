@@ -17,6 +17,7 @@ use App\Models\Vigencia\SolMedicaEspecialidad;
 use App\Models\Plataforma\EspecialidadHabilitadoServicio;
 use App\Models\Plataforma\Especialista;
 use App\Models\Vigencia\Convenio;
+use Illuminate\Support\Facades\DB;
 
 class Especialidad extends Model
 {
@@ -34,49 +35,77 @@ class Especialidad extends Model
 
     //Relaciones con la Tabla Usuario
 
-    public function usuarioCreador(){
-        return $this->belongsTo(User::class,'id_user_created','id');
-    }    
+    public function usuarioCreador()
+    {
+        return $this->belongsTo(User::class, 'id_user_created', 'id');
+    }
 
-    public function usuarioEditor(){
-        return $this->belongsTo(User::class,'id_user_updated','id');
+    public function usuarioEditor()
+    {
+        return $this->belongsTo(User::class, 'id_user_updated', 'id');
     }
 
     //Relaciones con el Esquema VVDD
     //Relaciones con la tabla AutorizacionIntEspecialidad
-    public function autorizacionIntEspecialidadEspecialidad(){
-        return $this->hasMany(Especialidad::class,'id_especialidad','id');
+    public function autorizacionIntEspecialidadEspecialidad()
+    {
+        return $this->hasMany(Especialidad::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con la Tabla Baja Medica
-    public function bajaMedicaEspecialidad(){
-        return $this->hasMany(BajaMedica::class, 'id_especialidad','id');
+    public function bajaMedicaEspecialidad()
+    {
+        return $this->hasMany(BajaMedica::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con la Tabla Convenio Especialidad
-    public function convenioEspecialidadEspecialidad(){
-        return $this->hasMany(Convenio::class, 'id_especialidad','id');
+    public function convenioEspecialidadEspecialidad()
+    {
+        return $this->hasMany(Convenio::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con la tabla Orden Servicio
-    public function ordenServicioEspecialidad(){
-        return $this->hasMany(OrdenServicio::class,'id_especialidad', 'id');
+    public function ordenServicioEspecialidad()
+    {
+        return $this->hasMany(OrdenServicio::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con la tabla Sol Medica Especialidad
-    public function solMedicaEspecialidadEspecialidad(){
-        return $this->hasMany(SolMedicaEspecialidad::class,'id_especialidad', 'id');
+    public function solMedicaEspecialidadEspecialidad()
+    {
+        return $this->hasMany(SolMedicaEspecialidad::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con el esquema Plataforma
     //Relaciones con la tabla Especialidad Habilitado Servicio
 
-    public function especialidadHabilitadoServicioEspecialidad(){
-        return $this->hasMany(EspecialidadHabilitadoServicio::class,'id_especialidad', 'id');
+    public function especialidadHabilitadoServicioEspecialidad()
+    {
+        return $this->hasMany(EspecialidadHabilitadoServicio::class, 'id_especialidad', 'id');
     }
 
     //Relaciones con la tabla Especialista
-    public function especialistaEspecialidad(){
-        return $this->hasMany(Especialista::class,'id_especialidad', 'id');
+    public function especialistaEspecialidad()
+    {
+        return $this->hasMany(Especialista::class, 'id_especialidad', 'id');
+    }
+
+    // --------------
+    public function especialistasConAgendas()
+    {
+        return $this->especialistaEspecialidad()->with('agendas');
+    }
+
+    public function calcularTotalAgendas()
+    {
+        return $this->especialistasConAgendas->sum(fn($esp) => $esp->agendas->count());
+    }
+    public function contarAgendasPorEspecialidad()
+    {
+        return DB::table('plataforma.especialista')
+            ->join('plataforma.asignacion_horario', 'especialista.id', '=', 'asignacion_horario.id_especialista')
+            ->join('plataforma.agenda', 'asignacion_horario.id', '=', 'agenda.id_asignacion_horario')
+            ->where('especialista.id_especialidad', $this->id)
+            ->count();
     }
 }

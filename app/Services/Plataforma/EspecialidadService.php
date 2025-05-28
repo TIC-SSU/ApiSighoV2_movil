@@ -2,10 +2,10 @@
 
 namespace App\Services\Plataforma;
 
-use App\Models\User;
+use App\Models\Administracion\Especialidad;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\DB;
 
 class EspecialidadService
 {
@@ -15,6 +15,37 @@ class EspecialidadService
     {
         $this->agendaService = $agendaService;
     }
+    public function top_especialidades()
+    {
+        $especialidades = Especialidad::all();
+
+        $resultados = $especialidades->map(function ($esp) {
+            return [
+                'id' => $esp->id,
+                'especialidad' => $esp->especialidad,
+                'total_agendas' => $esp->contarAgendasPorEspecialidad(),
+            ];
+        });
+
+        // Opcional: ordenar y limitar a las 5 más buscadas
+        $top5 = $resultados->sortByDesc('total_agendas')->take(5)->values();
+        return $top5;
+        // $topEspecialidades = Especialidad::select(
+        //     'administracion.especialidad.id',
+        //     'administracion.especialidad.especialidad',
+        //     DB::raw('COUNT(agenda.id) AS total_agendas')
+        // )
+        //     ->join('plataforma.especialista', 'especialista.id_especialidad', '=', 'administracion.especialidad.id')
+        //     ->join('plataforma.asignacion_horario', 'asignacion_horario.id_especialista', '=', 'especialista.id')
+        //     ->join('plataforma.agenda', 'agenda.id_asignacion_horario', '=', 'asignacion_horario.id')
+        //     ->groupBy('administracion.especialidad.id', 'administracion.especialidad.especialidad')
+        //     ->orderByDesc('total_agendas')
+        //     ->limit(5)
+        //     ->get();
+
+        // return $topEspecialidades;
+    }
+
     // Add your service logic here
     public function obtenerEspecialidadesCache()
     {
