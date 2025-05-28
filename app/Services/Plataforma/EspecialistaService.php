@@ -6,6 +6,7 @@ use App\Models\Plataforma\Agenda;
 use App\Models\Plataforma\Especialista;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class EspecialistaService
 {
@@ -27,6 +28,22 @@ class EspecialistaService
     // public $edadPediatria;
     // Add your service logic here
 
+    public function horarios_mas_citas()
+    {
+        $repeticiones = Agenda::with(['asignacionHorarioAgenda.especialistaDetalles'])->select('id_asignacion_horario', DB::raw('COUNT(id_asignacion_horario) as rep'))
+            ->groupBy('id_asignacion_horario')
+            ->orderByDesc('rep')
+            ->limit(5)
+            ->get();
+        return $repeticiones;
+    }
+    public function top_especialistas()
+    {
+        $conteo = $this->horarios_mas_citas();
+        $especialistas = [];
+        foreach ($conteo as $dato) {
+        }
+    }
     public function obtenerEspecialistasCache()
     {
         $especialistas_cache = Cache::get('especialistas');

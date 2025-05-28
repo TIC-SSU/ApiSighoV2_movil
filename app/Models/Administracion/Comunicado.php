@@ -12,7 +12,7 @@ class Comunicado extends Model
 {
     use HasFactory;
 
-    protected $table = "plataforma.comunicados";
+    protected $table = "administracion.comunicado";
     protected $connection = 'pgsql';
     protected $fillable = [
         'id',
@@ -28,16 +28,18 @@ class Comunicado extends Model
 
     //Relaciones
 
-    public function  usuarioEmisor(){
-        return $this->belongsTo(User::class,'id_usuario_emisor','id');
+    public function  usuarioEmisor()
+    {
+        return $this->belongsTo(User::class, 'id_usuario_emisor', 'id');
     }
 
-    public function usuarioCreador(){
-        return $this->belongsTo(User::class,'id_user_created','id');
-    }    
-
-    public function usuarioEditor(){
-        return $this->belongsTo(User::class,'id_user_updated','id');
+    public function usuarioCreador()
+    {
+        return $this->belongsTo(User::class, 'id_user_created', 'id');
     }
 
+    public function usuarioEditor()
+    {
+        return $this->belongsTo(User::class, 'id_user_updated', 'id');
+    }
 }

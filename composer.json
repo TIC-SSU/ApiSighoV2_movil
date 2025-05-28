@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.10.1",
         "league/flysystem-ftp": "*",
         "predis/predis": "^3.0",
+        "spatie/laravel-data": "^4.15",
         "tymon/jwt-auth": "^2.2"
     },
     "require-dev": {

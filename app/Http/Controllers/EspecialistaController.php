@@ -20,7 +20,39 @@ class EspecialistaController extends Controller
     {
         $this->especialistaService = $especialistaService;
     }
-
+    public function contar_horario(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->especialistaService->horarios_mas_citas();
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => "Peticion Existosa",
+                'data' => $response
+            ], 200);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error en especialistaService',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
     public function especialistas_datos(Request $request): JsonResponse
     {
         try {
