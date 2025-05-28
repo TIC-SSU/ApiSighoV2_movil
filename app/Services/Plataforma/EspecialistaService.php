@@ -41,6 +41,7 @@ class EspecialistaService
     {
         $topEspecialistas = Especialista::with([
             'persona',
+            'especialidadEspecialista',
             'asignacionHorarioEspecialista.consultorioAsignacionHorario.consultorioSedes',
             'asignacionHorarioEspecialista.horarioAsignacionHorario',
         ]) // si quieres traer datos de persona
