@@ -42,6 +42,7 @@ class EspecialistaService
         $topEspecialistas = Especialista::with([
             'persona',
             'asignacionHorarioEspecialista.consultorioAsignacionHorario.consultorioSedes',
+            'asignacionHorarioEspecialista.horarioAsignacionHorario',
         ]) // si quieres traer datos de persona
             ->withCount('agendas')                         // cuenta total de agendas relacionadas
             ->orderByDesc('agendas_count')                 // ordenar por cantidad de agendas
