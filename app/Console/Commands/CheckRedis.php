@@ -12,7 +12,7 @@ class CheckRedis extends Command
      *
      * @var string
      */
-    protected $signature = 'make:redis-check';
+    protected $signature = 'redis:check';
 
     /**
      * The console command description.

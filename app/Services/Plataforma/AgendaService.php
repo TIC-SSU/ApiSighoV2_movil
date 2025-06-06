@@ -27,7 +27,9 @@ class AgendaService
             $fechasDisponibles = DiasHabilitadosAgenda::where('estado', true)
                 ->where('id_servicio_plataforma', 2)
                 ->first();
-
+            if (!$fechasDisponibles) {
+                abort(404, 'no hay fechas para el servicio');
+            }
             $fechasElegibles = [];
             $diasHabilitadosAgenda = $fechasDisponibles->nro_dias;
             $agregarHoy = $fechasDisponibles->hoy;
