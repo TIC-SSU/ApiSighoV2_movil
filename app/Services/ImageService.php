@@ -62,6 +62,7 @@ class ImageService
         try {
             $path = $direccionCarpeta . $idFoto;
             // dd($path);
+            dd(Storage::disk('ftp')->exists($path));
             if (!Storage::disk('ftp')->exists($path)) {
                 abort(404, 'Imagen no encontrada'); // Imagen no encontrada
             }
