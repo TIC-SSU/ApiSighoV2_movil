@@ -28,6 +28,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('administracion')->group(function () {
         require base_path('routes/administracion/persona_routes.php');
+        require base_path('routes/administracion/user_routes.php');
         // require base_path('routes/administracion/especialidad_routes.php');
     });
 
