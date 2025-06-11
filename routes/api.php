@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Administracion\UserController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,8 @@ Route::prefix('auth')->group(function () {
 //     // Route::post('register', [AuthController::class, 'register']);
 // });
 // Rutas protegidas con JWT /* 'redis', */
+Route::get('api/administracion/obtener_imagen_usuario/{id_user}', [UserController::class, 'obtener_imagen_usuario'])
+    ->name('obtener_imagen_usuario');
 Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('testing')->group(function () {

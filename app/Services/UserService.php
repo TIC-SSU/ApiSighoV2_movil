@@ -7,6 +7,8 @@ use App\Services\ImageService;
 use App\Models\Administracion\Persona;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class UserService
 {
@@ -40,6 +42,12 @@ class UserService
     }
     public function url_imagen($id_user)
     {
-        return url('/api/administracion/obtener_imagen_usuario/' . $id_user);
+        $imagenUrl = URL::temporarySignedRoute(
+            'obtener_imagen_usuario',        // Nombre de la ruta que devuelve la imagen
+            now()->addMinutes(90),     // Duración de la validez (10 minutos aquí)
+            ['id_user' => $id_user]   // Parámetros que necesita la ruta
+        );
+        return $imagenUrl;
+        // return url('/api/administracion/obtener_imagen_usuario/' . $id_user);
     }
 }
