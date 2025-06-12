@@ -4,6 +4,7 @@ namespace App\Services\Plataforma;
 
 use App\Models\Plataforma\Agenda;
 use App\Models\Plataforma\Especialista;
+use App\Services\ImageService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,12 @@ class EspecialistaService
     // public $edadGeriatria;
     // public $edadPediatria;
     // Add your service logic here
+    protected $imagenService;
 
+    public function __construct(ImageService $imagenService)
+    {
+        $this->imagenService = $imagenService;
+    }
     public function horarios_mas_citas(): int
     {
         $repeticiones = Agenda::select('id_asignacion_horario', DB::raw('COUNT(id_asignacion_horario) as rep'))
@@ -67,8 +73,24 @@ class EspecialistaService
         if ($datos->isEmpty()) {
             abort(404, 'no se encontro especialistas');
         }
+        foreach ($datos as $especialista) {
+            $id_especialista = $especialista->id;
+            $url_imagen = $this->imagenService->url_imagen($id_especialista, 'imagen_especialista', 'id_especialista');
+            $especialista->url_imagen = $url_imagen;
+        }
         return $datos;
     }
+    public function imagen_especialista($id_especialista)
+    {
+        $especialista = Especialista::find($id_especialista);
+        if (!$especialista) {
+            abort(404, 'Especialista no encontrado');
+        }
+        $nombre_imagen = $especialista->foto;
+        $direccionCarpeta = 'Plataforma/Especialista/Fotos/';
+        return $this->imagenService->obtener_imagen($nombre_imagen, $direccionCarpeta);
+    }
+
     public function especialistas_disponibles($id_especialidad, $fechaElegida, $tipo_asegurado)
     {
         if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
@@ -179,8 +201,13 @@ class EspecialistaService
                         'id_zona' => $horario['id_zona'],
                         'zona' => $horario['zona'],
                         'id_especialista_especialista' => $especialistaDisponible['id_especialista'],
+                        // ?-------------------------
+                        // $this->imagenService->url_imagen($id_especialista, 'imagen_especialista', 'id_especialista')
+                        'url_imagen' => $this->imagenService->url_imagen($especialistaDisponible['id_especialista'], 'imagen_especialista', 'id_especialista'),
+                        // ?-------------------------
                         'nombres' => $especialistaDisponible['nombres'],
-                        'foto' => $especialistaDisponible['foto'],
+                        // 'foto' => $especialistaDisponible['foto'],
+
                         'grado_academico' => $especialistaDisponible['grado_academico'],
                     ];
                 }

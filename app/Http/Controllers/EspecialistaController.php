@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Plataforma\Especialista;
 use App\Services\Plataforma\EspecialistaService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -21,6 +20,40 @@ class EspecialistaController extends Controller
         $this->especialistaService = $especialistaService;
     }
 
+    public function imagen_especialista($id_especialista)
+    {
+        try {
+            return $this->especialistaService->imagen_especialista($id_especialista);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode() . ' ' . 'imagen_especialista',
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage() . ' ' . 'imagen_especialista',
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error en especialistaService' . ' ' . 'imagen_especialista',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
 
     public function top_especialistas(Request $request): JsonResponse
     {

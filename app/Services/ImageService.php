@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class ImageService
 {
@@ -28,22 +29,31 @@ class ImageService
         }
     }
 
-    public function obtener_imagen_v2(string $idFoto, string $direccionCarpeta)
+    public function obtener_imagen($idFoto, string $direccionCarpeta)
     {
         try {
-            $path = $direccionCarpeta . $idFoto;
-
-            if (Storage::disk('ftp')->exists($path)) {
-                $imageData = Storage::disk('ftp')->get($path);
-            } else {
-                // Cargar imagen por defecto desde el disco local (public/img/default_image.png)
+            if ($idFoto == null) {
                 $defaultPath = public_path('img/default_image.png');
 
                 if (!file_exists($defaultPath)) {
                     abort(404, 'Imagen no encontrada y no hay imagen por defecto');
                 }
-
                 $imageData = file_get_contents($defaultPath);
+            } else {
+                $path = $direccionCarpeta . $idFoto;
+
+                if (Storage::disk('ftp')->exists($path)) {
+                    $imageData = Storage::disk('ftp')->get($path);
+                } else {
+                    // Cargar imagen por defecto desde el disco local (public/img/default_image.png)
+                    $defaultPath = public_path('img/default_image.png');
+
+                    if (!file_exists($defaultPath)) {
+                        abort(404, 'Imagen no encontrada y no hay imagen por defecto');
+                    }
+
+                    $imageData = file_get_contents($defaultPath);
+                }
             }
 
             $mimeType = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $imageData);
@@ -56,8 +66,18 @@ class ImageService
             abort(500, 'Error al obtener imagen: ' . $th->getMessage());
         }
     }
-
-    public function obtener_imagen(string $idFoto, string $direccionCarpeta)
+    public function url_imagen($id, string $ruta, string $nombreParametro = 'id')
+    {
+        // dd($id, $ruta);
+        $imagenUrl = URL::temporarySignedRoute(
+            $ruta,        // Nombre de la ruta que devuelve la imagen
+            now()->addMinutes(90),     // Duración de la validez (10 minutos aquí)
+            [$nombreParametro => $id]   // Parámetros que necesita la ruta
+        );
+        return $imagenUrl;
+        // return url('/api/administracion/obtener_imagen_usuario/' . $id_user);
+    }
+    public function obtener_imagen_old(string $idFoto, string $direccionCarpeta)
     {
         try {
             $path = $direccionCarpeta . $idFoto;

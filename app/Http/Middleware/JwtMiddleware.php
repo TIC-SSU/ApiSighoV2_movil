@@ -8,20 +8,30 @@ use Exception;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\URL;
 
 class JWTMiddleware
 {
     protected $exceptRoutes = [
         'api/administracion/obtener_imagen_usuario/*',
+        'api/plataforma/imagen_especialista/*',
         // 'api/publico/descargar_documento/*',
         // 'api/sin-token/*', // Puedes agregar todas las que quieras aquí
     ];
     public function handle($request, Closure $next)
     {
 
-        foreach ($this->exceptRoutes as $route) {
-            if ($request->is($route)) {
-                return $next($request);
+        foreach ($this->exceptRoutes as $ruta) {
+            if ($request->is($ruta)) {
+                if (URL::hasValidSignature($request)) {
+                    return $next($request);
+                } else {
+                    return response()->json([
+                        'status' => 403,
+                        'success' => false,
+                        'message' => 'Firma inválida o expirada',
+                    ], 403);
+                }
             }
         }
 
