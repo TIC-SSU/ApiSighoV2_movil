@@ -31,6 +31,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('administracion')->group(function () {
         require base_path('routes/administracion/persona_routes.php');
+        require base_path('routes/administracion/comunicados_routes.php');
         require base_path('routes/administracion/user_routes.php');
         // require base_path('routes/administracion/especialidad_routes.php');
     });
@@ -42,6 +43,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::prefix('plataforma')->group(function () {
         require base_path('routes/plataforma/agenda_routes.php');
         require base_path('routes/plataforma/especialista_routes.php');
+        require base_path('routes/plataforma/especialidad_routes.php');
     });
     Route::prefix('auth')->group(function () {
         // Rutas sin autenticación

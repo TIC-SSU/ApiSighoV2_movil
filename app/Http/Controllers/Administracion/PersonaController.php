@@ -8,6 +8,9 @@ use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class PersonaController extends Controller
 {
@@ -22,7 +25,56 @@ class PersonaController extends Controller
         $this->personaService = $personaService;
         $this->imagenService = $imagenService;
     }
+    public function grupo_familiar($id_persona): JsonResponse
+    {
+        // $id_persona = $request->input('id_persona');
+        try {
+            $validator = Validator::make(
+                ['id_persona' => $id_persona],
+                ['id_persona' => 'required|integer|min:1']
+            );
 
+            // Lanzar excepción si la validación falla
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+            $response = $this->personaService->encontrarPersona($id_persona);
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => "Peticion Grupo familiar Existosa",
+                'data' => $response
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (NotFoundHttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (HttpException $e) {
+            return response()->json([
+                'status' => $e->getStatusCode(),
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getStatusCode());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Error en personaService',
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ], 500);
+        }
+    }
     public function obtenerPoblacionAseguradaCache()
     {
         try {

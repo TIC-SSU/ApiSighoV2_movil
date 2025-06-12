@@ -55,6 +55,15 @@ class EspecialistaService
             ->orderByDesc('agendas_count')                 // ordenar por cantidad de agendas
             ->limit(5)
             ->get();
+        if (!$topEspecialistas) {
+            abort(404, 'No hay un top de especialistas mas solicitados');
+        }
+        foreach ($topEspecialistas as $especialista) {
+            $url_imagen = $this->imagenService->url_imagen($especialista->id, 'imagen_especialista', 'id_especialista');
+            // dd($url_imagen);
+            $especialista->url_imagen = $url_imagen;
+        }
+        // $topEspecialistas=$this->imagenService->url_imagen($topEspecialistas->id)
         return $topEspecialistas;
     }
     public function obtenerEspecialistasCache()
