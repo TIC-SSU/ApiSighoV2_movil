@@ -21,6 +21,7 @@ Route::prefix('auth')->group(function () {
 // Rutas protegidas con JWT /* 'redis', */
 // Route::get('api/administracion/obtener_imagen_usuario/{id_user}', [UserController::class, 'obtener_imagen_usuario'])
 //     ->name('obtener_imagen_usuario');
+
 Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('testing')->group(function () {
@@ -36,7 +37,9 @@ Route::middleware(['auth.jwt'])->group(function () {
         // require base_path('routes/administracion/especialidad_routes.php');
     });
 
-    // Route::prefix('afiliacion')->group(function () {});
+    Route::prefix('afiliacion')->group(function () {
+        require base_path('routes/afiliacion/titular_routes.php');
+    });
 
     // Route::prefix('aportes')->group(function () {});
 

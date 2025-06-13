@@ -182,6 +182,9 @@ class PersonaService
             $titularGrupoFamiliar[0]['id_expedido'] = $personaTitular[0]->id_dept_exp;
             $titularGrupoFamiliar[0]['expedido'] = $personaTitular[0]->sigla;
             $titularGrupoFamiliar[0]['sexo'] = $personaTitular[0]->sexo;
+            // ? imagen
+            $titularGrupoFamiliar[0]['url_imagen'] = $this->imagenService->url_imagen($personaTitular[0]->id, 'imagen_titular', 'id_titular');
+            // ? 
 
             $grupoFam = Beneficiario::where('id_titular', $titular->id)
                 ->whereIn('vigencia', ['VIGENTE', 'CESANTE'])

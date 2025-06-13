@@ -15,6 +15,7 @@ class JWTMiddleware
     protected $exceptRoutes = [
         'api/administracion/obtener_imagen_usuario/*',
         'api/plataforma/imagen_especialista/*',
+        'api/afiliacion/imagen_titular/*',
         // 'api/publico/descargar_documento/*',
         // 'api/sin-token/*', // Puedes agregar todas las que quieras aquí
     ];
