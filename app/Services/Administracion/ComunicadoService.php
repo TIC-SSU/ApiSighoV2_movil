@@ -4,6 +4,7 @@ namespace App\Services\Administracion;
 
 use App\Data\Administracion\ComunicadoDTOData;
 use App\Models\Administracion\Comunicado;
+use App\Models\Plataforma\Comunicados;
 
 class ComunicadoService
 {
@@ -11,7 +12,7 @@ class ComunicadoService
 
     public function listar_comunicados()
     {
-        $comunicado = Comunicado::get();
+        $comunicado = Comunicados::get();
         if (!$comunicado || $comunicado->isEmpty()) {
             abort(404, 'No se encontraron comunicados');
         }
