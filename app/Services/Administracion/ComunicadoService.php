@@ -12,12 +12,19 @@ class ComunicadoService
 
     public function listar_comunicados()
     {
-        $comunicado = Comunicados::get();
-        if (!$comunicado || $comunicado->isEmpty()) {
+        $comunicados = Comunicados::get();
+
+        if ($comunicados->isEmpty()) {
             abort(404, 'No se encontraron comunicados');
         }
-        return $comunicado;
+
+        foreach ($comunicados as $comunicado) {
+            $comunicado->mensaje = strip_tags($comunicado->mensaje);
+        }
+
+        return $comunicados;
     }
+
     public function registrar_comunicado(ComunicadoDTOData $data)
     {
         // dd($data);
