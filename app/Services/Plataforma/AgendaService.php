@@ -2,6 +2,7 @@
 
 namespace App\Services\Plataforma;
 
+use App\Models\Plataforma\AdministracionFeriados;
 use App\Models\Plataforma\Agenda;
 use App\Models\Plataforma\DiasHabilitadosAgenda;
 use App\Models\Plataforma\Especialista;
@@ -42,7 +43,8 @@ class AgendaService
                 if ($fecha->dayOfWeek !== 0) {
                     $fechasElegibles[] = [
                         'fecha' => $fecha->format('Y-m-d'),
-                        'fecha_literal' => mb_strtoupper($fecha->isoFormat('dddd'))
+                        'fecha_literal' => mb_strtoupper($fecha->isoFormat('dddd')),
+                        'feriado' => $this->verificarFeriado($fecha->format('Y-m-d')),
                     ];
                 }
                 $fecha->addDay();
@@ -52,6 +54,14 @@ class AgendaService
             Log::error('Error obteniendo fechas disponibles: ' . $e->getMessage());
             throw $e;  // o false si prefieres
         }
+    }
+    public function verificarFeriado($fechaSeleccionada)
+    {
+        $feriado = AdministracionFeriados::where('fecha', $fechaSeleccionada)
+            ->where('estado', true)
+            ->exists();
+
+        return $feriado;
     }
 
     public function obtener_agenda_persona($id_persona)
