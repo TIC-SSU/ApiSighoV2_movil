@@ -121,11 +121,14 @@ class EspecialistaService
             abort(404, 'No se encontraron especialistas en caché.');
         }
         // dd($especialistas_cache);
+
+        $tipo_asegurado = $this->definirTipoAsegurado($tipo_asegurado);
+
         $especialistas = collect($especialistas_cache);
 
         $especialistasFiltrados = $especialistas->filter(function ($esp) use ($id_especialidad, $fechaElegida, $tipo_asegurado) {
 
-            $tipo_asegurado = $this->definirTipoAsegurado($tipo_asegurado);
+
 
             if ($esp['id_especialidad'] !== $id_especialidad) return false;
 
