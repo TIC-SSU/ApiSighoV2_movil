@@ -499,7 +499,7 @@ class EspecialistaService
         }
 
         //return $horas;
-
+        dd($procentajeHorarioDisponible);
         return $this->revisarHoras($horas, $procentajeHorarioDisponible);
     }
     public function procesarHoraAgendaWeb($estadoHora, $horaActual)
