@@ -485,6 +485,8 @@ class EspecialistaService
 
         $procentajeHorarioDisponible = $this->cantidadHorarioDisponible();
 
+        dd($procentajeHorarioDisponible);
+
         // horitas disponiblesssss
         while ($inicio->lt($fin)) {
             $horaActual = $inicio->format('H:i');
@@ -566,8 +568,6 @@ class EspecialistaService
             })
             ->with(['diasHabilitadosAgendaCantidadHorario'])
             ->orderBy('id', 'asc')->get();
-
-        dd($cantidadHorarios);
 
         $porcentaje = 0;
 
