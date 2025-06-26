@@ -570,7 +570,7 @@ class EspecialistaService
         $porcentaje = 0;
 
         foreach ($cantidadHorarios as $key => $cantidadHorario) {
-            dd($cantidadHorario->hora_inicio);
+            dd(Carbon::now()->gte(Carbon::parse($cantidadHorario->hora_inicio)));
             $horasDisponibles[] = Carbon::parse($cantidadHorario->hora_inicio)->format('H:i') . ' - ' . Carbon::parse($cantidadHorario->hora_fin)->format('H:i');
             if ((Carbon::now()->gte(Carbon::parse($cantidadHorario->hora_inicio))) && (Carbon::now()->lte(Carbon::parse($cantidadHorario->hora_fin)))) {
 
