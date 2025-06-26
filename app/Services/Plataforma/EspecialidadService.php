@@ -59,17 +59,15 @@ class EspecialidadService
     public function listar_especialidades($fecha, $id_persona_titular, $sexo, $fecha_nacimiento)
     {
         $edad = Carbon::parse($fecha_nacimiento)->age;
-
-        $numero = ($edad === 0);
         // dd($fecha, $id_persona_titular);
-        /*$response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
+        $response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
         // dd($response);
         if ($this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular)) {
             abort(404, 'Ya existe un familar agendado en la fecha');
         }
         $especialidadesPorFecha = Cache::get('especialidades');
         // dd($especialidadesPorFecha);
-        if (!$especialidadesPorFecha) {
+        /*if (!$especialidadesPorFecha) {
             abort(404, 'No se encontraron especialidades en caché.');
         }
 
@@ -118,6 +116,6 @@ class EspecialidadService
         }
 
         return $especialidadesDisponibles;*/
-        return $numero;
+        return $especialidadesPorFecha;
     }
 }
