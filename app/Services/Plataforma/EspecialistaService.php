@@ -128,8 +128,6 @@ class EspecialistaService
 
         $especialistasFiltrados = $especialistas->filter(function ($esp) use ($id_especialidad, $fechaElegida, $tipo_asegurado) {
 
-
-
             if ($esp['id_especialidad'] !== $id_especialidad) return false;
 
             $contrato_valido = ($esp['fecha_contrato_inicio'] <= $fechaElegida || $esp['permanente']) &&
@@ -146,9 +144,8 @@ class EspecialistaService
             return true;
         });
 
-        return $tipo_asegurado;
         // dd($especialistasFiltrados);
-        /*$especialistasDisponibles = collect();
+        $especialistasDisponibles = collect();
 
         foreach ($especialistasFiltrados as $especialista) {
             $habilitacionesActivas = collect($especialista['especialistaHabilitado'])->filter(function ($hab) use ($diaElegido, $fechaElegida) {
@@ -236,7 +233,7 @@ class EspecialistaService
             abort(404, 'No hay especialistas disponibles.');
         }
 
-        return $horariosDisponibles;*/
+        return $horariosDisponibles;
     }
 
     public function especialistas_disponibles_old($id_especialidad, $fechaElegida, $tipo_asegurado)
