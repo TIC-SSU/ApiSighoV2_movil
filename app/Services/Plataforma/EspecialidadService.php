@@ -60,7 +60,7 @@ class EspecialidadService
     {
         $edad = Carbon::parse($fecha_nacimiento)->age;
         // dd($fecha, $id_persona_titular);
-        $response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
+        /*$response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
         // dd($response);
         if ($this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular)) {
             abort(404, 'Ya existe un familar agendado en la fecha');
@@ -86,7 +86,7 @@ class EspecialidadService
 
             if ($disponible) {
 
-                $nombreEspecialidad = strtoupper($especialidad['especialidad']);
+                $nombreEspecialidad = mb_strtoupper($especialidad['especialidad']);
 
                 if ($nombreEspecialidad === 'GERIATRÍA' && $edad <= 59) {
                     continue;
@@ -115,6 +115,7 @@ class EspecialidadService
             abort(422, 'No hay especialidades disponibles para la fecha seleccionada.');
         }
 
-        return $especialidadesDisponibles;
+        return $especialidadesDisponibles;*/
+        return $edad;
     }
 }
