@@ -499,7 +499,6 @@ class EspecialistaService
         }
 
         //return $horas;
-        dd($procentajeHorarioDisponible);
         return $this->revisarHoras($horas, $procentajeHorarioDisponible);
     }
     public function procesarHoraAgendaWeb($estadoHora, $horaActual)
@@ -567,6 +566,8 @@ class EspecialistaService
             })
             ->with(['diasHabilitadosAgendaCantidadHorario'])
             ->orderBy('id', 'asc')->get();
+
+        dd($cantidadHorarios);
 
         $porcentaje = 0;
 
