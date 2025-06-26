@@ -103,7 +103,7 @@ class EspecialistaService
 
     public function especialistas_disponibles($id_especialidad, $fechaElegida, $tipo_asegurado)
     {
-        if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
+        /*if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
             abort(400, 'Faltan parámetros obligatorios.');
         }
 
@@ -231,7 +231,8 @@ class EspecialistaService
             abort(404, 'No hay especialistas disponibles.');
         }
 
-        return $horariosDisponibles;
+        return $horariosDisponibles;*/
+        return 'este est';
     }
 
     public function especialistas_disponibles_old($id_especialidad, $fechaElegida, $tipo_asegurado)
@@ -318,7 +319,7 @@ class EspecialistaService
     public function listar_especialistas($id_especialidad, $fechaElegida)
     {
 
-        /*$fechaElegida = Carbon::parse($fechaElegida)->format('Y-m-d');
+        $fechaElegida = Carbon::parse($fechaElegida)->format('Y-m-d');
         $diaElegido = Carbon::parse($fechaElegida)->dayOfWeek;
         $identificadorTipoAsegurado = null;
 
@@ -442,8 +443,7 @@ class EspecialistaService
                 }
             }
         }
-        return $especialistasDisponibles;*/
-        return 'este es';
+        return $especialistasDisponibles;
     }
     public function especialistaSeleccionado($idEspecialista, $idAsignacionHorario, $fechaElegida)
     {
