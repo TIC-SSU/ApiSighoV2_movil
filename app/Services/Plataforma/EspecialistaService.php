@@ -144,7 +144,7 @@ class EspecialistaService
             return true;
         });
 
-        return $especialistas[0]['estudiantes'];
+        return $especialistas[0]['estudiante'];
 
         // dd($especialistasFiltrados);
         /*$especialistasDisponibles = collect();
