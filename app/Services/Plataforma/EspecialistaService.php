@@ -103,7 +103,7 @@ class EspecialistaService
 
     public function especialistas_disponibles($id_especialidad, $fechaElegida, $tipo_asegurado)
     {
-        /*if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
+        if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
             abort(400, 'Faltan parámetros obligatorios.');
         }
 
@@ -142,8 +142,10 @@ class EspecialistaService
 
             return true;
         });
+
+        return $tipo_asegurado;
         // dd($especialistasFiltrados);
-        $especialistasDisponibles = collect();
+        /*$especialistasDisponibles = collect();
 
         foreach ($especialistasFiltrados as $especialista) {
             $habilitacionesActivas = collect($especialista['especialistaHabilitado'])->filter(function ($hab) use ($diaElegido, $fechaElegida) {
@@ -232,7 +234,6 @@ class EspecialistaService
         }
 
         return $horariosDisponibles;*/
-        return 'este est';
     }
 
     public function especialistas_disponibles_old($id_especialidad, $fechaElegida, $tipo_asegurado)
