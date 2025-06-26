@@ -126,6 +126,7 @@ class EspecialistaService
         $especialistasFiltrados = $especialistas->filter(function ($esp) use ($id_especialidad, $fechaElegida, $tipo_asegurado) {
 
             $tipo_asegurado = $this->definirTipoAsegurado($tipo_asegurado);
+
             if ($esp['id_especialidad'] !== $id_especialidad) return false;
 
             $contrato_valido = ($esp['fecha_contrato_inicio'] <= $fechaElegida || $esp['permanente']) &&
@@ -317,7 +318,7 @@ class EspecialistaService
     public function listar_especialistas($id_especialidad, $fechaElegida)
     {
 
-        $fechaElegida = Carbon::parse($fechaElegida)->format('Y-m-d');
+        /*$fechaElegida = Carbon::parse($fechaElegida)->format('Y-m-d');
         $diaElegido = Carbon::parse($fechaElegida)->dayOfWeek;
         $identificadorTipoAsegurado = null;
 
@@ -441,8 +442,8 @@ class EspecialistaService
                 }
             }
         }
-        return $especialistasDisponibles;
-        // $paso = 3;
+        return $especialistasDisponibles;*/
+        return 'este es';
     }
     public function especialistaSeleccionado($idEspecialista, $idAsignacionHorario, $fechaElegida)
     {
