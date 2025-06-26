@@ -61,10 +61,14 @@ class EspecialidadController extends Controller
             $request->validate([
                 'fecha' => 'required',
                 'id_persona_titular' => 'required',
+                'sexo' => 'required',
+                'fecha_nacimiento' => 'required',
             ]);
             $fecha = $request->input('fecha');
             $id_persona_titular = $request->input('id_persona_titular');
-            $especialidades = $this->especialidadService->listar_especialidades($fecha, $id_persona_titular);
+            $sexo = $request->input('sexo');
+            $fecha_nacimiento = $request->input('fecha_nacimiento');
+            $especialidades = $this->especialidadService->listar_especialidades($fecha, $id_persona_titular, $sexo, $fecha_nacimiento);
 
             return response()->json([
                 'status' => 200,

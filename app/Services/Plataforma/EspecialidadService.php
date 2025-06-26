@@ -49,9 +49,6 @@ class EspecialidadService
     // Add your service logic here
     public function obtenerEspecialidadesCache()
     {
-
-
-
         $especialidades_cache = Cache::get('especialidades');
         // dd($especialidades_cache);
         if (!$especialidades_cache) {
@@ -59,8 +56,9 @@ class EspecialidadService
         }
         return $especialidades_cache;
     }
-    public function listar_especialidades($fecha, $id_persona_titular)
+    public function listar_especialidades($fecha, $id_persona_titular, $sexo, $fecha_nacimiento)
     {
+        $edad = Carbon::parse($fecha_nacimiento)->age;
         // dd($fecha, $id_persona_titular);
         $response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
         // dd($response);
@@ -87,6 +85,25 @@ class EspecialidadService
             );
 
             if ($disponible) {
+
+                $nombreEspecialidad = strtoupper($especialidad['especialidad']);
+
+                if ($nombreEspecialidad === 'GERIATRÍA' && $edad <= 59) {
+                    continue;
+                }
+
+                if ($nombreEspecialidad === 'PEDIATRÍA' && $edad >= 15) {
+                    continue;
+                }
+
+                if ($nombreEspecialidad === 'GINECOLOGÍA' && $sexo === 'M') {
+                    continue;
+                }
+
+                if ($nombreEspecialidad === 'UROLOGÍA' && $sexo === 'F') {
+                    continue;
+                }
+
                 $especialidadesDisponibles[] = [
                     'id_especialidad' => $especialidad['id_especialidad'],
                     'especialidad' => $especialidad['especialidad'],

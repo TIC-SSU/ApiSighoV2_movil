@@ -212,6 +212,7 @@ class AgendaController extends Controller
             Log::error('Error al obtener las fechas: ' . $e->getMessage());
 
             return response()->json([
+                'status' => 500,
                 'success' => false,
                 'message' => 'Ocurrió un error inesperado. Por favor, intente más tarde.',
                 'error' => $e->getMessage()
