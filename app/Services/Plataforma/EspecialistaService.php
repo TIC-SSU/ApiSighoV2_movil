@@ -144,8 +144,10 @@ class EspecialistaService
             return true;
         });
 
+        return $especialistas_cache;
+
         // dd($especialistasFiltrados);
-        $especialistasDisponibles = collect();
+        /*$especialistasDisponibles = collect();
 
         foreach ($especialistasFiltrados as $especialista) {
             $habilitacionesActivas = collect($especialista['especialistaHabilitado'])->filter(function ($hab) use ($diaElegido, $fechaElegida) {
@@ -233,7 +235,7 @@ class EspecialistaService
             abort(404, 'No hay especialistas disponibles.');
         }
 
-        return $horariosDisponibles;
+        return $horariosDisponibles;*/
     }
 
     public function especialistas_disponibles_old($id_especialidad, $fechaElegida, $tipo_asegurado)
