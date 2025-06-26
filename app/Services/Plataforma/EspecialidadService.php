@@ -67,7 +67,7 @@ class EspecialidadService
         }
         $especialidadesPorFecha = Cache::get('especialidades');
         // dd($especialidadesPorFecha);
-        /*if (!$especialidadesPorFecha) {
+        if (!$especialidadesPorFecha) {
             abort(404, 'No se encontraron especialidades en caché.');
         }
 
@@ -115,7 +115,6 @@ class EspecialidadService
             abort(422, 'No hay especialidades disponibles para la fecha seleccionada.');
         }
 
-        return $especialidadesDisponibles;*/
-        return $especialidadesPorFecha;
+        return $especialidadesDisponibles;
     }
 }
