@@ -485,7 +485,7 @@ class EspecialistaService
 
         $procentajeHorarioDisponible = $this->cantidadHorarioDisponible();
 
-        dd($procentajeHorarioDisponible);
+
 
         // horitas disponiblesssss
         while ($inicio->lt($fin)) {
