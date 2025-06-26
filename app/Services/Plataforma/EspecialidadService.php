@@ -58,9 +58,9 @@ class EspecialidadService
     }
     public function listar_especialidades($fecha, $id_persona_titular, $sexo, $fecha_nacimiento)
     {
-        $edad = Carbon::parse($fecha_nacimiento);
+        $edad = Carbon::parse($fecha_nacimiento)->age;
         // dd($fecha, $id_persona_titular);
-        /*$response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
+        $response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
         // dd($response);
         if ($this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular)) {
             abort(404, 'Ya existe un familar agendado en la fecha');
@@ -115,7 +115,6 @@ class EspecialidadService
             abort(422, 'No hay especialidades disponibles para la fecha seleccionada.');
         }
 
-        return $especialidadesDisponibles;*/
-        return $edad;
+        return $especialidadesDisponibles;
     }
 }
