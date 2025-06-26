@@ -58,7 +58,7 @@ class EspecialidadService
     }
     public function listar_especialidades($fecha, $id_persona_titular, $sexo, $fecha_nacimiento)
     {
-        //$edad = Carbon::createFromFormat('d/m/Y', $fecha_nacimiento)->age;
+        $edad = Carbon::parse($fecha_nacimiento);
         // dd($fecha, $id_persona_titular);
         /*$response = $this->agendaService->existeGrupoFamiliarAgendado($fecha, $id_persona_titular);
         // dd($response);
@@ -116,6 +116,6 @@ class EspecialidadService
         }
 
         return $especialidadesDisponibles;*/
-        return $fecha_nacimiento;
+        return $edad;
     }
 }
