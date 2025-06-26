@@ -8,6 +8,7 @@ use App\Services\ImageService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EspecialistaService
 {
@@ -123,6 +124,8 @@ class EspecialistaService
         $especialistas = collect($especialistas_cache);
 
         $especialistasFiltrados = $especialistas->filter(function ($esp) use ($id_especialidad, $fechaElegida, $tipo_asegurado) {
+
+            $tipo_asegurado = $this->definirTipoAsegurado($tipo_asegurado);
             if ($esp['id_especialidad'] !== $id_especialidad) return false;
 
             $contrato_valido = ($esp['fecha_contrato_inicio'] <= $fechaElegida || $esp['permanente']) &&
@@ -527,6 +530,24 @@ class EspecialistaService
             }
         }
         return $hora;
+    }
+
+    private function definirTipoAsegurado($tipoAsegurado)
+    {
+        $arraycitoTipoAsegurado = [
+            'TITULAR' => 1,
+            'BENEFICIARIO DEL INTERIOR' => 2,
+            'TITULAR DEL INTERIOR' => 2,
+            'TITULAR CONVENIO' => 2,
+        ];
+
+        if (isset($arraycitoTipoAsegurado[$tipoAsegurado])) {
+            return $arraycitoTipoAsegurado[$tipoAsegurado];
+        } elseif (Str::contains($tipoAsegurado, 'BENEFICIARIO')) {
+            return 1;
+        } else {
+            return 3;
+        }
     }
     // public function especialistas_disponibles($id_especialidad, $fechaElegida, $tipo_asegurado)
     // {

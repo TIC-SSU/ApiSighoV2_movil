@@ -164,7 +164,7 @@ class EspecialistaController extends Controller
             return response()->json([
                 'status' => 200,
                 'success' => true,
-                'message' => "Espepecialistas habilitados",
+                'message' => "Especialistas habilitados",
                 'data' => $response
             ], 200);
         } catch (NotFoundHttpException $e) {
