@@ -515,6 +515,7 @@ class EspecialistaService
             'motivo_suspension' => null,
             'servicio' => null,
             'ficha_extra' => false,
+            'horario_disponible' => true
         ];
 
         if ($estadoHora) {
