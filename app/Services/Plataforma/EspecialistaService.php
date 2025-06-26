@@ -3,6 +3,7 @@
 namespace App\Services\Plataforma;
 
 use App\Models\Plataforma\Agenda;
+use App\Models\Plataforma\CantidadHorario;
 use App\Models\Plataforma\Especialista;
 use App\Services\ImageService;
 use Carbon\Carbon;
@@ -482,6 +483,8 @@ class EspecialistaService
         $inicio = Carbon::createFromFormat('H:i:s', $horaInicio);
         $fin = Carbon::createFromFormat('H:i:s', $horaFin);
 
+        $procentajeHorarioDisponible = $this->cantidadHorarioDisponible();
+
         // horitas disponiblesssss
         while ($inicio->lt($fin)) {
             $horaActual = $inicio->format('H:i');
@@ -495,7 +498,9 @@ class EspecialistaService
             $inicio->addMinutes($inter);
         }
 
-        return $horas;
+        //return $horas;
+
+        return $this->revisarHoras($horas, $procentajeHorarioDisponible);
     }
     public function procesarHoraAgendaWeb($estadoHora, $horaActual)
     {
@@ -551,6 +556,53 @@ class EspecialistaService
             return 3;
         }
     }
+
+    public function cantidadHorarioDisponible()
+    {
+        $cantidadHorarios = CantidadHorario::where('eliminado', false)
+            ->where('estado', true)
+            ->whereHas('diasHabilitadosAgendaCantidadHorario', function ($dhaCantidadHorario) {
+                $dhaCantidadHorario->where('id_servicio_plataforma', 2);
+            })
+            ->with(['diasHabilitadosAgendaCantidadHorario'])
+            ->orderBy('id', 'asc')->get();
+
+        $porcentaje = 0;
+
+        foreach ($cantidadHorarios as $key => $cantidadHorario) {
+            $horasDisponibles[] = Carbon::parse($cantidadHorario->hora_inicio)->format('H:i') . ' - ' . Carbon::parse($cantidadHorario->hora_fin)->format('H:i');
+            if ((Carbon::now()->gte(Carbon::parse($cantidadHorario->hora_inicio))) && (Carbon::now()->lte(Carbon::parse($cantidadHorario->hora_fin)))) {
+                $porcentaje = $cantidadHorario->porcentaje;
+            }
+        }
+
+        return $porcentaje;
+    }
+
+    public function revisarHoras(array $horas, $porcentaje)
+    {
+        $numeroHorarios = count($horas);
+
+        $numeroHorariosDisponibles = (int) ceil(($numeroHorarios * $porcentaje) / 100);
+
+        foreach ($horas as $key => &$hora) {
+            if (($key + 1) > $numeroHorariosDisponibles) {
+                $hora['horario_disponible'] = false;
+            }
+        }
+        unset($hora);
+
+        return $horas;
+    }
+
+
+
+
+
+
+
+
+
     // public function especialistas_disponibles($id_especialidad, $fechaElegida, $tipo_asegurado)
     // {
     //     if (!$id_especialidad || !$fechaElegida || !$tipo_asegurado) {
