@@ -90,7 +90,7 @@ class AuthController extends Controller
                 'line' => $th->getLine(), // Línea donde ocurrió el error
                 'file' => $th->getFile(), // Archivo donde ocurrió el error
             ];
-            return response()->json($dataError, 500);
+            return response()->json($this->cleanUtf8($dataError['error']), 500);
         }
     }
 
@@ -98,5 +98,12 @@ class AuthController extends Controller
     {
         JWTAuth::invalidate(JWTAuth::getToken());
         return response()->json(['message' => 'Sesión cerrada correctamente']);
+    }
+    private function cleanUtf8($string)
+    {
+        if (is_string($string)) {
+            return mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        }
+        return $string;
     }
 }
